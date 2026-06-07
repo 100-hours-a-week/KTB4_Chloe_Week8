@@ -6,6 +6,7 @@ import homework.week4.Comment.dto.CommentRequestDto;
 import homework.week4.Comment.dto.CommentResponseDto;
 import homework.week4.Comment.entity.Comment;
 import homework.week4.Comment.repository.CommentRepository;
+import homework.week4.Post.dto.PostResponseDto;
 import homework.week4.Post.entity.Post;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Validated
@@ -66,6 +69,26 @@ public class CommentService {
                 commentdto.getComment_content(),
                 commentdto.getComment_datewritten()
         );
+    }
+
+    //댓글 목록 반환 -> 상세 게시글을 위해
+    public List<CommentResponseDto> listComment (Long post_id){
+        List<Comment> commentsList = commentRepository.listComment(post_id);
+
+        List<CommentResponseDto> commentsListDto = new ArrayList<>();
+        for(Comment commenttdto : commentsList){
+            commentsListDto.add(
+                    new CommentResponseDto(
+                            commenttdto.getParent_comment_id(),
+                            commenttdto.getComment_id(),
+                            commenttdto.getCommenter(),
+                            commenttdto.getComment_content(),
+                            commenttdto.getComment_datewritten()
+                    )
+
+            );
+        }
+        return commentsListDto;
     }
 
     public void verifyCommentOwner(Long user_id,Long post_id){

@@ -5,7 +5,9 @@ import homework.week4.Post.entity.Post;
 import homework.week4.User.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -53,6 +55,21 @@ public class CommentRepository {
 
         return comments.get(comment_db_id);
 
+    }
+
+    //댓글 목록
+    public List<Comment> listComment(Long post_id){
+
+        List<Comment> commentsList = new ArrayList<>();
+
+        for(Comment comment : comments.values()){
+
+            if(comment.getPost_id().equals(post_id)){
+                commentsList.add(comment);
+            }
+        }
+
+        return commentsList;
     }
 
     //댓글 주인 여부 (수정,삭제에서 사용)

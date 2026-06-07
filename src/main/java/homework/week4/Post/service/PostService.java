@@ -1,5 +1,7 @@
 package homework.week4.Post.service;
 
+import homework.week4.Comment.dto.CommentResponseDto;
+import homework.week4.Comment.service.CommentService;
 import homework.week4.Post.dto.*;
 import homework.week4.Post.entity.Post;
 import homework.week4.Post.repository.PostRepository;
@@ -21,6 +23,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
+    private final CommentService commentService;
 
     public PostResponseDto createPost (Long user_id, @Valid PostRequestDto request){
         userService.checkUser(user_id); //에외가 일어나면 밑에도 실행 X
@@ -73,12 +76,12 @@ public class PostService {
     }
 
     // 상세 게시글 조회
-    public PostResponseDto getPost(Long user_id, Long post_id){
+    public PostDetailResponseDto getPost(Long user_id, Long post_id){
         userService.checkUser(user_id); //에외가 일어나면 밑에도 실행 X
 
         Post postdto = postRepository.getPost(user_id);
 
-        return new PostResponseDto(
+        PostResponseDto postResponseDto = new PostResponseDto(
                 postdto.getPost_id(),
                 postdto.getTitle(),
                 postdto.getContent(),
@@ -90,6 +93,10 @@ public class PostService {
                 postdto.getComment_count(),
                 postdto.getView_count()
         );
+
+        List<CommentResponseDto> commentResponseDto = commentService.listComment(post_id);
+
+        return new PostDetailResponseDto(postResponseDto,commentResponseDto);
     }
 
     public void verifyPostOwner(Long user_id,Long post_id){

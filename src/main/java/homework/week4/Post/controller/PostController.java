@@ -4,7 +4,6 @@ import homework.week4.Post.dto.*;
 import homework.week4.Post.service.PostService;
 import homework.week4.User.service.UserService;
 import homework.week4.response.ApiResponse;
-import homework.week4.response.ErrorResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,11 +47,11 @@ public class PostController {
     }
 
     @GetMapping("/{user_id}/{post_id}")
-    public ResponseEntity<ApiResponse<PostResponseDto>> getPost(
+    public ResponseEntity<ApiResponse<PostDetailResponseDto>> getPost(
             @PathVariable Long user_id,
             @PathVariable Long post_id
     ){
-        PostResponseDto result = postService.getPost(user_id,post_id);
+        PostDetailResponseDto result = postService.getPost(user_id,post_id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of("상세게시글 조회_성공",result));
