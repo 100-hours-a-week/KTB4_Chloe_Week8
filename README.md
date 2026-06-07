@@ -1,4 +1,7 @@
 # KTB4_Chloe_Week4
+## 프로젝트 초기 설정
+<img width="865" height="493" alt="image" src="https://github.com/user-attachments/assets/fb4101fe-c5e9-4ef3-96e0-ef8115c3fb91" />
+
 ## 구현상의 한계
 
 ### Spring security는 사용하지 않고 진행
