@@ -58,7 +58,7 @@ public class PostController {
     }
 
     @PutMapping("/{user_id}/{post_id}")
-    public ResponseEntity<String> modifyPost(
+    public ResponseEntity<ApiResponse<Void>> modifyPost(
             @PathVariable Long user_id,
             @PathVariable Long post_id,
             @Valid @RequestBody PostRequestDto request
@@ -66,7 +66,7 @@ public class PostController {
         postService.modifyPost(user_id, post_id, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("게시글 수정 완료");
+                .body(ApiResponse.of("게시글 수정 완료",null));
     }
 
     @DeleteMapping("/{user_id}/{post_id}")
