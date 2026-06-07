@@ -1,8 +1,6 @@
 package homework.week4.Post.controller;
 
-import homework.week4.Post.dto.PostDeclareResponseDto;
-import homework.week4.Post.dto.PostRequestDto;
-import homework.week4.Post.dto.PostResponseDto;
+import homework.week4.Post.dto.*;
 import homework.week4.Post.service.PostService;
 import homework.week4.User.service.UserService;
 import homework.week4.response.ApiResponse;
@@ -95,10 +93,18 @@ public class PostController {
                 .body(ApiResponse.of("게시글 신고 요청 완료",result));
     }
 
-//    @PostMapping("/{user_id}/{post_id}/like")
-//    public ResponseEntity<ApiResponse<PostDeclareResponseDto>> likePost(
-//            @PathVariable Long user_id,
-//            @PathVariable Long post_id
-//    )
+    @PostMapping("/{user_id}/{post_id}/like")
+    public ResponseEntity<ApiResponse<PostLikeResponseDto>> likePost(
+            @PathVariable Long user_id,
+            @PathVariable Long post_id,
+            @RequestBody PostLikeRequestDto request
+
+            ){
+        PostLikeResponseDto result = postService.likePost(user_id,post_id,request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of("좋아요 요청 완료",result));
+    }
 
 }

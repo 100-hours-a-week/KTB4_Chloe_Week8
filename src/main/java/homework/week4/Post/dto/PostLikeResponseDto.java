@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PostLikeRequestDto {
-    private Boolean is_liked;
+public class PostLikeResponseDto {
+    private Long like_count;
 }

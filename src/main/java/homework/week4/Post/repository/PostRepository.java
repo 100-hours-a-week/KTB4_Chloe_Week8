@@ -44,13 +44,13 @@ public class PostRepository {
     }
 
     //게시글 조회 -> 이 조회를 할 때 마다 조회수 늘리기
-    public Post getPost(Long post_db_id){
+    public Post getPost(Long post_id){
 
-        Long view_count = posts.get(post_db_id).getView_count();
+        Long view_count = posts.get(post_id).getView_count();
 
-        posts.get(post_db_id).setView_count(++view_count); //조회수 늘리기
+        posts.get(post_id).setView_count(++view_count); //조회수 늘리기
 
-        return posts.get(post_db_id);
+        return posts.get(post_id);
     }
 
 
@@ -106,6 +106,22 @@ public class PostRepository {
 
         return posts.get(post_id);
 
+    }
+
+
+
+    public Long likePost(Long post_id,Boolean is_liked){
+        Long like_count = posts.get(post_id).getLike_count();
+
+        if(is_liked) {
+            posts.get(post_id).setLike_count(++like_count);
+        }
+        else{
+            posts.get(post_id).setLike_count(--like_count);
+        }
+
+
+        return posts.get(post_id).getLike_count();
     }
 
 

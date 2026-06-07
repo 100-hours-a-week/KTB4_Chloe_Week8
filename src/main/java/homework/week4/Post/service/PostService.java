@@ -1,8 +1,6 @@
 package homework.week4.Post.service;
 
-import homework.week4.Post.dto.PostDeclareResponseDto;
-import homework.week4.Post.dto.PostRequestDto;
-import homework.week4.Post.dto.PostResponseDto;
+import homework.week4.Post.dto.*;
 import homework.week4.Post.entity.Post;
 import homework.week4.Post.repository.PostRepository;
 import homework.week4.User.service.UserService;
@@ -133,4 +131,15 @@ public class PostService {
                 postdto.getPost_hide()
         );
     }
+
+    public PostLikeResponseDto likePost(Long user_id, Long post_id, PostLikeRequestDto request){
+        userService.checkUser(user_id);
+
+        Boolean is_liked = request.getIs_liked();
+
+        Long like_count = postRepository.likePost(post_id,is_liked);
+
+        return new PostLikeResponseDto(like_count);
+    }
+
 }

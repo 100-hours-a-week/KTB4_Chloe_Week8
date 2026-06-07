@@ -3,6 +3,7 @@ package homework.week4.User.service;
 import homework.week4.User.dto.*;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
+import homework.week4.exception.UnauthorizedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,7 @@ public class UserService {
             return;
         }
 
-        throw new NullPointerException("");
+        throw new UnauthorizedException("인증되지 않은 사용자 입니다.");
     }
 
 

@@ -1,6 +1,7 @@
 package homework.week4.handler;
 
 import homework.week4.exception.ForbiddenException;
+import homework.week4.exception.UnauthorizedException;
 import homework.week4.response.ValidErrorResponse;
 import homework.week4.response.ErrorResponse;
 
@@ -40,9 +41,9 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of("해당 정보를 찾을 수 없습니다."));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> illegalArgumentException(
-            IllegalArgumentException exception) {
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> unauthorizedException(
+            UnauthorizedException exception) {
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -50,7 +51,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorResponse> unauthorizedException(
+    public ResponseEntity<ErrorResponse> forbiddenException(
             ForbiddenException exception) {
 
         return ResponseEntity

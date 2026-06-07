@@ -4,6 +4,7 @@ import homework.week4.Auth.dto.LoginRequestDto;
 import homework.week4.Auth.dto.LoginResponseDto;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
+import homework.week4.exception.UnauthorizedException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class AuthService {
 
     public LoginResponseDto LoginUser (@Valid @RequestBody LoginRequestDto request){
         Long user_id = userRepository.verifyUser(request.getEmail(), request.getPassword())
-                .orElseThrow(() -> new IllegalArgumentException("인증되지 않은 사용자 입니다."));
+                .orElseThrow(() -> new UnauthorizedException("인증되지 않은 사용자 입니다."));
 
         return new LoginResponseDto(user_id);
     }
