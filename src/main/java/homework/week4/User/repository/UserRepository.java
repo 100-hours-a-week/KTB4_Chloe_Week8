@@ -18,11 +18,9 @@ public class UserRepository {
 
 
     //사용자 저장
-    public Long saveUser(User user){
+    public void saveUser(User user){
         user_id ++;
         users.put(user_id,user);
-
-        return user_id;
     }
 
 

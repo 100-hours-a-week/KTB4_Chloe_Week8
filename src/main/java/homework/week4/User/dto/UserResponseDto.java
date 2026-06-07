@@ -10,19 +10,12 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDto {
 
-    private Long user_id; // 회원가입 때 반환회원
-
     private String email;
-    private String password;
     private String nickname;
     private String profile_image;
 
     private Boolean is_member;
 
-
-    public UserResponseDto(Long user_id) {
-        this.user_id = user_id;
-    }
 
     public UserResponseDto(String email,String nickname,String profile_image){
         this.email = email;

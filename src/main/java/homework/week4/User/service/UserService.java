@@ -16,7 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserResponseDto createUser(@Valid SignUpRequestDto request) {
+    public void createUser(@Valid SignUpRequestDto request) {
 
         User user = new User(
                 request.getEmail(),
@@ -26,8 +26,8 @@ public class UserService {
                 true
         );
 
-        Long user_id = userRepository.saveUser(user);
-        return new UserResponseDto(user_id);
+       userRepository.saveUser(user);
+
     }
 
     public UserResponseDto lookupUser(Long user_id) {

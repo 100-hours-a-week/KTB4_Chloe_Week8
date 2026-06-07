@@ -23,13 +23,13 @@ public class UserController {
 
     //회원 가입 -> 사용자 생성
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@Valid @RequestBody SignUpRequestDto request) {
+    public ResponseEntity<Void> createUser(@Valid @RequestBody SignUpRequestDto request) {
 
-        UserResponseDto result = userService.createUser(request);
+       userService.createUser(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.of("회원가입 성공",result));
+                .build();
     }
 
     //회원 정보 조회
