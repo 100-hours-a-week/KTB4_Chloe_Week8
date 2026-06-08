@@ -51,7 +51,8 @@ public class PostService {
 
     }
 
-    public List<PostResponseDto> listPost (Long cursor_id, Long limit_count){
+    public List<PostResponseDto> listPost (Long user_id, Long cursor_id, Long limit_count){
+        userService.checkUser(user_id);
         List<Post> postsList = postRepository.listPost(cursor_id,limit_count);
 
         List<PostResponseDto> postsListDto = new ArrayList<>();
@@ -79,7 +80,7 @@ public class PostService {
     public PostDetailResponseDto getPost(Long user_id, Long post_id){
         userService.checkUser(user_id); //에외가 일어나면 밑에도 실행 X
 
-        Post postdto = postRepository.getPost(user_id);
+        Post postdto = postRepository.getPost(post_id);
 
         PostResponseDto postResponseDto = new PostResponseDto(
                 postdto.getPost_id(),

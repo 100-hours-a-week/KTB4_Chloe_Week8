@@ -20,13 +20,14 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/{user_id}")
     public ResponseEntity<ApiResponse<List<PostResponseDto>>>listPost(
+            @PathVariable Long user_id,
             @RequestParam("cursor") Long cursor_id,
             @RequestParam("limit") Long limit_count
     ){
 
-        List<PostResponseDto> result= postService.listPost(cursor_id, limit_count);
+        List<PostResponseDto> result= postService.listPost(user_id,cursor_id, limit_count);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
