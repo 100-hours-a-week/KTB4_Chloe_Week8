@@ -19,7 +19,7 @@ public class AuthService {
 
     public LoginResponseDto LoginUser (@Valid @RequestBody LoginRequestDto request){
         Long user_id = userRepository.verifyUser(request.getEmail(), request.getPassword())
-                .orElseThrow(() -> new UnauthorizedException("인증되지 않은 사용자 입니다."));
+                .orElseThrow(() -> new NullPointerException(""));
 
         return new LoginResponseDto(user_id);
     }
