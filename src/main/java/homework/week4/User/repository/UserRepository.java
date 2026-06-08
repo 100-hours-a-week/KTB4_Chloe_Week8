@@ -63,9 +63,6 @@ public class UserRepository {
                 if (users.get(user_id).getPassword().equals(password)) {
                     return Optional.ofNullable(user_id);
                 }
-                else{
-                    return Optional.empty();
-                }
             }
         }
 
