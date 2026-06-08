@@ -34,9 +34,9 @@ public class UserController {
 
     //회원 정보 조회
     @GetMapping("/{user_id}")
-    public ResponseEntity<ApiResponse<UserResponseDto>> lookupUser(@PathVariable Long user_id) {
+    public ResponseEntity<ApiResponse<UserGetResponseDto>> lookupUser(@PathVariable Long user_id) {
 
-        UserResponseDto result = userService.lookupUser(user_id);
+        UserGetResponseDto result = userService.lookupUser(user_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -45,9 +45,9 @@ public class UserController {
 
     //회원 탈퇴
     @DeleteMapping("/{user_id}")
-    public ResponseEntity<ApiResponse<UserResponseDto>> deleteUser(@PathVariable Long user_id) {
+    public ResponseEntity<ApiResponse<UserDeleteResponseDto>> deleteUser(@PathVariable Long user_id) {
 
-        UserResponseDto result = userService.deleteUser(user_id);
+        UserDeleteResponseDto result = userService.deleteUser(user_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

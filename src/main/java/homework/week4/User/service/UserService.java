@@ -30,17 +30,17 @@ public class UserService {
 
     }
 
-    public UserResponseDto lookupUser(Long user_id) {
+    public UserGetResponseDto lookupUser(Long user_id) {
 
         User user = userRepository.getUser(user_id);
-        return new UserResponseDto(user.getEmail(),user.getNickname(),user.getProfile_image());
+        return new UserGetResponseDto(user.getEmail(),user.getNickname(),user.getProfile_image());
     }
 
-    public UserResponseDto deleteUser(Long user_id){
+    public UserDeleteResponseDto deleteUser(Long user_id){
 
         boolean is_member = userRepository.softdeleteUser(user_id);
         User user = userRepository.getUser(user_id);
-        return new UserResponseDto(user.getNickname(),is_member);
+        return new UserDeleteResponseDto(user.getNickname(),is_member);
     }
 
     public UserChangeResponseDto changeUser(Long user_id,@Valid UserChangeRequestDto request){
