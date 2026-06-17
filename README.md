@@ -1,4 +1,4 @@
-# KTB4_Chloe_Week4
+# KTB4_Chloe_아무말 대잔치 커뮤니티
 ## 프로젝트 초기 설정
 <img width="865" height="493" alt="image" src="https://github.com/user-attachments/assets/fb4101fe-c5e9-4ef3-96e0-ef8115c3fb91" />
 
