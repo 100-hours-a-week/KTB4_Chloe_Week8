@@ -66,8 +66,8 @@ public class PostController {
     ){
         postService.modifyPost(user_id, post_id, request);
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ApiResponse.of("게시글 수정 완료",null));
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     @DeleteMapping("/{user_id}/{post_id}")
