@@ -7,6 +7,7 @@ import homework.week4.response.ErrorResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,12 +51,14 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorResponse> forbiddenException(
-            ForbiddenException exception) {
+
+    //깨진 JSON 요청 예외 처리
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> httpMessageNotReadableException(
+            HttpMessageNotReadableException exception) {
 
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
