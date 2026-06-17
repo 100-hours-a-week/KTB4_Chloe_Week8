@@ -86,7 +86,7 @@ public class PostController {
             @PathVariable Long user_id,
             @PathVariable Long post_id
     ){
-        PostDeclareResponseDto result = postService.declarePost(user_id,post_id);
+        PostDeclareResponseDto result = postService.reportPost(user_id,post_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

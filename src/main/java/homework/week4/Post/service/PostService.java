@@ -128,11 +128,10 @@ public class PostService {
         postRepository.removePost(post_id);
     }
 
-    public PostDeclareResponseDto declarePost(Long user_id, Long post_id){
+    public PostDeclareResponseDto reportPost(Long user_id, Long post_id){
         userService.checkUser(user_id);
-        verifyPostOwner(user_id,post_id);
 
-        Post postdto = postRepository.declarePost(post_id);
+        Post postdto = postRepository.reportPost(post_id);
 
         return new PostDeclareResponseDto(
                 postdto.getPost_id(),

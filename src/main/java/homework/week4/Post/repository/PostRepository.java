@@ -95,7 +95,7 @@ public class PostRepository {
     }
 
     //게시글 신고
-    public Post declarePost(Long post_id){
+    public Post reportPost(Long post_id){
 
         int declare_count = posts.get(post_id).getDeclare_count();
         posts.get(post_id).setDeclare_count(++declare_count); //조회수 늘리기
