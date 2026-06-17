@@ -2,6 +2,7 @@ package homework.week4.handler;
 
 import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.ForbiddenException;
+import homework.week4.exception.NotFoundException;
 import homework.week4.exception.UnauthorizedException;
 import homework.week4.response.ValidErrorResponse;
 import homework.week4.response.ErrorResponse;
@@ -34,13 +35,14 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ErrorResponse> nullPointerException(
-            NullPointerException exception) {
+    //리소스 검사 예외 처리
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> notFoundException(
+            NotFoundException exception) {
 
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponse.of("해당 정보를 찾을 수 없습니다."));
+                .status(exception.getStatus())
+                .body(ErrorResponse.of(exception.getMessage()));
     }
 
     //인증 검사 예외처리
