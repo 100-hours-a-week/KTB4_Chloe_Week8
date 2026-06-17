@@ -19,7 +19,7 @@ public class AuthService {
 
     public LoginResponseDto LoginUser (@Valid @RequestBody LoginRequestDto request){
         Long user_id = userRepository.verifyUser(request.getEmail(), request.getPassword())
-                .orElseThrow(() -> new NullPointerException(""));
+                .orElseThrow(() -> new UnauthorizedException("이메일 또는 비밀번호가 틀렸습니다."));
 
         return new LoginResponseDto(user_id);
     }
