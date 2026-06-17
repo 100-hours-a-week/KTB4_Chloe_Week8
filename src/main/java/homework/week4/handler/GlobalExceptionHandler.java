@@ -73,4 +73,14 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
+    //예상하지 못한 예외 처리
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> exception(
+            Exception exception) {
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getMessage()));
+    }
+
 }
