@@ -91,12 +91,12 @@ public class CommentService {
         return commentsListDto;
     }
 
-    public void verifyCommentOwner(Long user_id,Long post_id){
+    public void verifyCommentOwner(Long user_id,Long post_id,String Emessage){
         if(commentRepository.checkCommentOwner(user_id,post_id)){
             return;
         }
 
-        throw new ForbiddenException("댓글 변경 권한이 없습니다.");
+        throw new ForbiddenException(Emessage);
     }
 
     public CommentContentResponseDto modifyComment(
@@ -104,7 +104,7 @@ public class CommentService {
             Long comment_id,
             @Valid CommentRequestDto request){
         userService.checkUser(user_id);
-        verifyCommentOwner(user_id,comment_id);
+        verifyCommentOwner(user_id,comment_id,"댓글 수정 권한이 없습니다.");
 
         Comment modifycontent = new Comment(
                 request.getComment_content()
@@ -121,7 +121,7 @@ public class CommentService {
             Long comment_id
     ){
         userService.checkUser(user_id);
-        verifyCommentOwner(user_id,comment_id);
+        verifyCommentOwner(user_id,comment_id,"댓글 삭제 권한이 없습니다.");
 
         Boolean unknown_mark = commentRepository.deleteComment(comment_id);
 

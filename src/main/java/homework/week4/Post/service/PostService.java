@@ -100,17 +100,17 @@ public class PostService {
         return new PostDetailResponseDto(postResponseDto,commentResponseDto);
     }
 
-    public void verifyPostOwner(Long user_id,Long post_id){
+    public void verifyPostOwner(Long user_id,Long post_id,String Emessage){
         if(postRepository.checkpostOwner(user_id,post_id)){
            return;
         }
 
-        throw new ForbiddenException("게시물에 변경 권한이 없습니다.");
+        throw new ForbiddenException(Emessage);
     }
 
     public void modifyPost (Long user_id,Long post_id,@Valid PostRequestDto request){
         userService.checkUser(user_id); //에외가 일어나면 밑에도 실행 X
-        verifyPostOwner(user_id,post_id); //게시물에 대한 변경 권한 없음..
+        verifyPostOwner(user_id,post_id,"게시글 수정 권한이 없습니다."); //게시물에 대한 변경 권한 없음..
         Post modifycontent = new Post(
                 request.getTitle(),
                 request.getContent(),
@@ -123,7 +123,7 @@ public class PostService {
 
     public void deletePost(Long user_id, Long post_id){
         userService.checkUser(user_id);
-        verifyPostOwner(user_id,post_id);
+        verifyPostOwner(user_id,post_id,"게시글 삭제 권한이 없습니다.");
 
         postRepository.removePost(post_id);
     }
