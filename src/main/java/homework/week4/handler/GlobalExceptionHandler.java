@@ -1,5 +1,6 @@
 package homework.week4.handler;
 
+import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.UnauthorizedException;
 import homework.week4.response.ValidErrorResponse;
@@ -59,6 +60,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(exception.getMessage()));
+    }
+
+    //중복 예외 처리
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponse> duplicateResourceException(
+            DuplicateResourceException exception) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
