@@ -43,12 +43,23 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of("해당 정보를 찾을 수 없습니다."));
     }
 
+    //인증 검사 예외처리
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> unauthorizedException(
             UnauthorizedException exception) {
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(exception.getStatus())
+                .body(ErrorResponse.of(exception.getMessage()));
+    }
+
+    //인가 검사 예외처리
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> forbiddenException(
+            ForbiddenException exception) {
+
+        return ResponseEntity
+                .status(exception.getStatus())
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
@@ -69,7 +80,7 @@ public class GlobalExceptionHandler {
             DuplicateResourceException exception) {
 
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(exception.getStatus())
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
