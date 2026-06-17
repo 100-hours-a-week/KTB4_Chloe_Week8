@@ -1,9 +1,6 @@
 package homework.week4.handler;
 
-import homework.week4.exception.DuplicateResourceException;
-import homework.week4.exception.ForbiddenException;
-import homework.week4.exception.NotFoundException;
-import homework.week4.exception.UnauthorizedException;
+import homework.week4.exception.*;
 import homework.week4.response.ValidErrorResponse;
 import homework.week4.response.ErrorResponse;
 
@@ -93,6 +90,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.of(exception.getMessage()));
+    }
+
+    //요청 횟수 초과 예외 처리
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<ErrorResponse> tooManyRequestsException(
+            TooManyRequestsException exception) {
+
+        return ResponseEntity
+                .status(exception.getStatus())
                 .body(ErrorResponse.of(exception.getMessage()));
     }
 
