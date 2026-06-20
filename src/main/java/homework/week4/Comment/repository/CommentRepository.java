@@ -27,7 +27,7 @@ public class CommentRepository {
         comments.put(comment_db_id,comment);
 
         String commenter = userRepository.getUsers().get(user_id).getNickname();
-        comments.get(comment_db_id).setComment_id(comment_db_id);
+        //comments.get(comment_db_id).setComment_id(comment_db_id);
         comments.get(comment_db_id).setCommenter(commenter);
         comments.get(comment_db_id).setParent_comment_id(0L);
         comments.get(comment_db_id).setIs_having_child(false);

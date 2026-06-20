@@ -1,6 +1,7 @@
 package homework.week4.Post.repository;
 
 import homework.week4.Post.entity.Post;
+import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,7 +25,7 @@ public class PostRepository {
         posts.put(post_db_id,post);
 
         String writer = userRepository.getUsers().get(user_id).getNickname();
-        posts.get(post_db_id).setPost_id(post_db_id); //게시글 번호 설정
+        // posts.get(post_db_id).setPost_id(post_db_id); //게시글 번호 설정
         posts.get(post_db_id).setWriter(writer); //게시글 작성자 설정
 
         //초기화

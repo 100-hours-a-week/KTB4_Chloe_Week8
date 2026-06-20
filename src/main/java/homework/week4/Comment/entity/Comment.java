@@ -1,25 +1,40 @@
 package homework.week4.Comment.entity;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
 
-    @Setter
-    private Long post_id;
-    @Setter
-    private Long parent_comment_id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long comment_id;
 
     @Setter
-    private Long comment_id;
+    @ManyToOne()
+    @JoinColumn(name = "post_id")
+    private Long post_id;
+
+
+    @Setter
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Comment> children = new ArrayList<>();
+
+
+    //User 외래키로 변경
     @Setter
     private String commenter;
 
@@ -30,7 +45,9 @@ public class Comment {
     private Boolean is_having_child;
 
     @Setter
-    private Boolean unknown_mark;
+    private Boolean is_blinde;
+    
+
 
     public Comment(String comment_content,LocalDateTime comment_datewritten){
         this.comment_content = comment_content;
@@ -45,4 +62,7 @@ public class Comment {
         this.comment_content = comment_content;
     }
 
+    public Long getParent_comment_id() {
+        return 1L;
+    }
 }

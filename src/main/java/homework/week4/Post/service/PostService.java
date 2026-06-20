@@ -115,6 +115,7 @@ public class PostService {
                 request.getTitle(),
                 request.getContent(),
                 request.getPost_image()
+
         );
 
         postRepository.modifyPost(post_id,modifycontent);

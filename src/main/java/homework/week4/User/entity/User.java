@@ -1,9 +1,6 @@
 package homework.week4.User.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,32 +9,36 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;
+    @Column(name = "user_id")
+    private Long userId;
 
     private String email;
     private String password;
     private String nickname;
-    private String profile_image;
+
+    @Column(name = "profile_image")
+    private String profileImage;
 
     //회원 탈퇴 여부의 기본값은 true
-    private Boolean is_member = true;
+    @Column(name = "is_member")
+    private Boolean isMember = true;
 
-    public User(String email, String password, String nickname,String profile_image,Boolean is_member) {
+    public User(String email, String password, String nickname,String profileImage) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.profile_image = profile_image;
-        //this.is_member = is_member;
+        this.profileImage = profileImage;
     }
 
     // 회원 탙퇴 표시 -> soft deleted
     public Boolean deleteMark(){
-        this.is_member = false;
-        return is_member;
+        this.isMember = false;
+        return isMember;
     }
 
 
@@ -47,8 +48,8 @@ public class User {
     }
 
     //프로필 이미지 변경
-    public void changeProfileImgae (String profile_image){
-        this.profile_image = profile_image;
+    public void changeProfileImgae (String profileImage){
+        this.profileImage = profileImage;
     }
 
     //비밀번호 변경
