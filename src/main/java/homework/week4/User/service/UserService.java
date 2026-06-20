@@ -3,15 +3,15 @@ package homework.week4.User.service;
 import homework.week4.User.dto.*;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
+import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.NotFoundException;
-import homework.week4.exception.UnauthorizedException;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Optional;
 
 @Service
 @Validated
@@ -20,9 +20,28 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    //이메일 중복 검사
+    public void emailDuplicateCheck(String email){
+        if(!userRepository.existsByEmail(email)){
+            throw new DuplicateResourceException("중복된 이메일이 존재합니다.");
+        }
+    }
+
+    //닉네임 중복 검사
+    public void nicknameDuplicateCheck(String email){
+        if(!userRepository.existsByNickname(email)){
+            throw new DuplicateResourceException("중복된 닉네임이 존재합니다.");
+        }
+    }
+
     //사용자 등록
     @Transactional
     public SignUpResponseDto createUser(String email, String password, String nickname,String  profile_image) {
+
+        //중복 검사
+        emailDuplicateCheck(email);
+        nicknameDuplicateCheck(nickname);
+
         User user = new User(email, password, nickname,profile_image);
         userRepository.save(user);
         return new SignUpResponseDto(user.getUserId());
