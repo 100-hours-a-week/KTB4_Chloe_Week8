@@ -21,4 +21,9 @@ public class Like {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post postId;
+
+    public Like (User userId,Post postId){
+        this.userId = userId;
+        this.postId = postId;
+    }
 }

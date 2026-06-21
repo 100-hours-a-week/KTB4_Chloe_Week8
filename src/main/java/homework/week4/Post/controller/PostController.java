@@ -93,14 +93,27 @@ public class PostController {
                 .body(ApiResponse.of("게시글 신고 요청 완료",result));
     }
 
+    //좋아요 등록
     @PostMapping("/{user_id}/{post_id}/like")
-    public ResponseEntity<ApiResponse<PostLikeResponseDto>> likePost(
+    public ResponseEntity<ApiResponse<PostLikeResponseDto>> likeCreatePost(
             @PathVariable Long user_id,
-            @PathVariable Long post_id,
-            @RequestBody PostLikeRequestDto request
-
+            @PathVariable Long post_id
             ){
-        PostLikeResponseDto result = postService.likePost(user_id,post_id,request);
+        PostLikeResponseDto result = postService.createLike(user_id,post_id);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.of("좋아요 요청 완료",result));
+    }
+
+    //좋아요 취소
+    @DeleteMapping("/{user_id}/{post_id}/like")
+    public ResponseEntity<ApiResponse<PostLikeResponseDto>> likeCancelPost(
+            @PathVariable Long user_id,
+            @PathVariable Long post_id
+
+    ){
+        PostLikeResponseDto result = postService.cancelLike(user_id,post_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

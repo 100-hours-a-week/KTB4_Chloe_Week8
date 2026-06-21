@@ -3,7 +3,9 @@ package homework.week4.Post.service;
 import homework.week4.Comment.dto.CommentResponseDto;
 import homework.week4.Comment.service.CommentService;
 import homework.week4.Post.dto.*;
+import homework.week4.Post.entity.Like;
 import homework.week4.Post.entity.Post;
+import homework.week4.Post.repository.LikeRespoitory;
 import homework.week4.Post.repository.PostRepository;
 import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
@@ -28,6 +30,7 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final LikeRespoitory likeRespoitory;
     private final UserService userService;
     private final CommentService commentService;
 
@@ -128,7 +131,7 @@ public class PostService {
     //게시글 수정
     @Transactional
     public void modifyPost (Long userId,Long postId, @Valid PostRequestDto request){
-        userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
+        userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
         verifyPostOwner(userId,postId,"게시글 수정 권한이 없습니다.");//게시물에 대한 변경 권한 없음..
 
         Post post = getValidPost(postId);
@@ -146,13 +149,55 @@ public class PostService {
     //게시글 삭제
     @Transactional
     public void deletePost(Long userId, Long postId){
-        userService.getValidUser(userId);
+        userService.checkUser(userId);
         verifyPostOwner(userId,postId,"게시글 삭제 권한이 없습니다.");
 
         Post post = getValidPost(postId);
         LocalDateTime deletedDateTime = LocalDateTime.now();
 
         post.isDeleted(deletedDateTime);
+
+    }
+
+    //게시글 좋아요 등록
+    @Transactional
+    public PostLikeResponseDto createLike(Long userId, Long postId){
+
+        //게시글 & 사용자 검증 다 함.
+        User user = userService.getValidUser(userId);
+        Post post = getValidPost(postId);
+
+        Like like = new Like(user,post);
+
+        likeRespoitory.save(like);
+
+        Long likeCount = likeRespoitory.CountByPostPostId(postId);
+
+        post.likeCount(likeCount);
+
+        return new PostLikeResponseDto(likeCount);
+    }
+
+    //게시글 좋아요 취소
+    @Transactional
+    public PostLikeResponseDto cancelLike(Long userId, Long postId){
+
+        User user = userService.getValidUser(userId);
+        Post post = getValidPost(postId);
+
+        Like like = likeRespoitory.findByUserUserIdAndPostPostId(user.getUserId(),post.getPostId())
+                .orElseThrow(() -> new NotFoundException("해당 좋아요가 존재하지 않습니다."));
+
+        //좋아요 삭제하고
+        likeRespoitory.delete(like);
+
+        //삭제가 적용된 좋아요 수 반환
+        Long likeCount = likeRespoitory.CountByPostPostId(postId);
+
+        //좋아요 수 게시글 likeCount에 업데이트
+        post.likeCount(likeCount);
+
+        return new PostLikeResponseDto(likeCount);
 
     }
 
@@ -169,14 +214,6 @@ public class PostService {
         );
     }
 
-    public PostLikeResponseDto likePost(Long user_id, Long post_id, PostLikeRequestDto request){
-        userService.getValidUser(user_id);
 
-        Boolean is_liked = request.getIs_liked();
-
-        Long like_count = postRepository.likePost(post_id,is_liked);
-
-        return new PostLikeResponseDto(like_count);
-    }
 
 }
