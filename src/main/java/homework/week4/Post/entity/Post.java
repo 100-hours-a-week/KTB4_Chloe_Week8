@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Post {
 
-    //@Setter
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="post_id")
     private Long postId;
@@ -31,11 +30,6 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User writer;
-
-
-    //신고 테이블에서 count 해서 가져와야 함..
-    //@Setter
-    //private int declare_count; //신고 횟수..
 
     @Column(name="is_edited")
     private Boolean isEdited = false;
@@ -89,6 +83,10 @@ public class Post {
         this.deletedAt = deletedAt;
     }
 
+    public void PostHide(){
+        this.postHide = true;
+    }
+
     public void likeCount(Long likCount){
         this.likeCount = likCount;
     }
@@ -100,6 +98,7 @@ public class Post {
     public Long viewCountIncrement() {
         return ++viewCount;
     }
+
 
 
 }

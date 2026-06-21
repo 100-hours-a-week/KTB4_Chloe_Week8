@@ -82,11 +82,11 @@ public class PostController {
     }
 
     @PostMapping("/{user_id}/{post_id}/declartion")
-    public ResponseEntity<ApiResponse<PostDeclareResponseDto>> declarePost(
+    public ResponseEntity<ApiResponse<PostReportResponseDto>> declarePost(
             @PathVariable Long user_id,
             @PathVariable Long post_id
     ){
-        PostDeclareResponseDto result = postService.reportPost(user_id,post_id);
+        PostReportResponseDto result = postService.reportPost(user_id,post_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

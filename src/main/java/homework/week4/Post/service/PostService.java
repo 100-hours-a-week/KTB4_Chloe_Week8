@@ -5,8 +5,10 @@ import homework.week4.Comment.service.CommentService;
 import homework.week4.Post.dto.*;
 import homework.week4.Post.entity.Like;
 import homework.week4.Post.entity.Post;
+import homework.week4.Post.entity.PostReportHistory;
 import homework.week4.Post.repository.LikeRespoitory;
 import homework.week4.Post.repository.PostRepository;
+import homework.week4.Post.repository.ReportRepository;
 import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.ForbiddenException;
@@ -31,6 +33,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final LikeRespoitory likeRespoitory;
+    private final ReportRepository reportRepository;
+
     private final UserService userService;
     private final CommentService commentService;
 
@@ -99,6 +103,8 @@ public class PostService {
     public PostDetailResponseDto getPost(Long userId, Long postId){
         userService.checkUser(userId);
         Post post = getValidPost(postId);
+
+        post.viewCountIncrement();
 
         PostResponseDto postResponseDto = new PostResponseDto(
                 post.getPostId(),
@@ -202,15 +208,29 @@ public class PostService {
     }
 
 
+    //게시글 신고
+    @Transactional
+    public PostReportResponseDto reportPost(Long userId, Long postId){
+        User user = userService.getValidUser(userId);
+        Post post = getValidPost(postId);
 
-    public PostDeclareResponseDto reportPost(Long user_id, Long post_id){
-        userService.getValidUser(user_id);
+        LocalDateTime reportedDateTime = LocalDateTime.now();
 
-        Post postdto = postRepository.reportPost(post_id);
+        PostReportHistory postReportHistory = new PostReportHistory(user,post,reportedDateTime);
 
-        return new PostDeclareResponseDto(
-                postdto.getPost_id(),
-                postdto.getPost_hide()
+        //신고 저장
+        reportRepository.save(postReportHistory);
+
+        //count 해서 신고 횟수 계산
+        int reportCount = reportRepository.countByPostPostId(postId);
+
+        if(reportCount == 5){
+            post.PostHide();
+        }
+
+        return new PostReportResponseDto(
+                post.getPostId(),
+                post.getPostHide()
         );
     }
 

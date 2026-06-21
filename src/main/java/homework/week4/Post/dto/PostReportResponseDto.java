@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDeclareResponseDto {
-    private Long post_id;
-    private Boolean post_hide;
+public class PostReportResponseDto {
+    private Long postId;
+    private Boolean postHide;
 }
