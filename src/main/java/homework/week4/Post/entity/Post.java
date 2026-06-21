@@ -30,7 +30,7 @@ public class Post {
     @Column(name="date_written")
     private LocalDateTime dateWritten;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User writer;
 
