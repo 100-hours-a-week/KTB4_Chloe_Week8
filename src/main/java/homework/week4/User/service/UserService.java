@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
+
 
 @Service
 @Validated
@@ -42,11 +44,14 @@ public class UserService {
         emailDuplicateCheck(request.getEmail());
         nicknameDuplicateCheck(request.getNickname());
 
+        LocalDateTime createdDateTime = LocalDateTime.now();
+
         User user = new User(
                 request.getEmail(),
                 request.getPassword(),
                 request.getNickname(),
-                request.getProfile_image()
+                request.getProfile_image(),
+                createdDateTime
         );
         userRepository.save(user);
         return new SignUpResponseDto(user.getUserId());
@@ -90,8 +95,9 @@ public class UserService {
     public UserDeleteResponseDto deleteUser(Long userId){
 
         User user = getValidUser(userId);
+        LocalDateTime deletedDateTime = LocalDateTime.now();
 
-        user.deleteMark();
+        user.deleteMark(deletedDateTime);
         return new UserDeleteResponseDto(user.getNickname(),user.getIsMember());
     }
 
@@ -102,8 +108,10 @@ public class UserService {
     public UserChangeResponseDto changeUser(Long userId, @Valid UserChangeRequestDto request){
         User user = getValidUser(userId);
 
+        LocalDateTime updatedDateTime = LocalDateTime.now();
+
         //여기서 JPA 알아서 변경 감지!!
-        user.changeNickname(request.getNickname());
+        user.changeNickname(request.getNickname(),updatedDateTime);
         user.changeProfileImgae(request.getProfileImage());
 
 
@@ -115,7 +123,9 @@ public class UserService {
     @Transactional
     public void changePassWord(Long userId, @Valid UserPasswordRequestDto request){
         User user = getValidUser(userId);
-        user.changePassword(request.getPassword());
+        LocalDateTime updatedDateTime = LocalDateTime.now();
+
+        user.changePassword(request.getPassword(),updatedDateTime);
     }
 
 
