@@ -36,20 +36,32 @@ public class UserService {
 
     //사용자 등록
     @Transactional
-    public SignUpResponseDto createUser(String email, String password, String nickname,String  profile_image) {
+    public SignUpResponseDto createUser(@Valid SignUpRequestDto request) {
 
         //중복 검사
-        emailDuplicateCheck(email);
-        nicknameDuplicateCheck(nickname);
+        emailDuplicateCheck(request.getEmail());
+        nicknameDuplicateCheck(request.getNickname());
 
-        User user = new User(email, password, nickname,profile_image);
+        User user = new User(
+                request.getEmail(),
+                request.getPassword(),
+                request.getNickname(),
+                request.getProfile_image()
+        );
         userRepository.save(user);
         return new SignUpResponseDto(user.getUserId());
     }
 
-
     //사용자 여부 확인
-    public User checkUser(Long userId){
+    public void checkUser(Long userId){
+        if(!userRepository.existsByIdAndIsMemberTrue(userId)){
+            throw new NotFoundException("해당 사용자가 존재하지 않습니다.");
+        }
+    }
+
+
+    //사용자 확인 및 반환
+    public User getValidUser(Long userId){
         User user = userRepository.findByIdAndIsMemberTrue(userId).orElseThrow(
                 () -> new NotFoundException("해당 사용자 정보가 존재하지 않습니다."));
 
@@ -61,7 +73,7 @@ public class UserService {
     //사용자 조회
     public UserGetResponseDto lookupUser(Long userId){
 
-        User user = checkUser(userId);
+        User user = getValidUser(userId);
 
         return new UserGetResponseDto(
                 user.getEmail(),
@@ -77,7 +89,7 @@ public class UserService {
     @Transactional
     public UserDeleteResponseDto deleteUser(Long userId){
 
-        User user = checkUser(userId);
+        User user = getValidUser(userId);
 
         user.deleteMark();
         return new UserDeleteResponseDto(user.getNickname(),user.getIsMember());
@@ -88,8 +100,9 @@ public class UserService {
     //사용자 정보 수정
     @Transactional
     public UserChangeResponseDto changeUser(Long userId, @Valid UserChangeRequestDto request){
-        User user = checkUser(userId);
+        User user = getValidUser(userId);
 
+        //여기서 JPA 알아서 변경 감지!!
         user.changeNickname(request.getNickname());
         user.changeProfileImgae(request.getProfileImage());
 
@@ -101,7 +114,7 @@ public class UserService {
     //사용자 비밀번호 수정
     @Transactional
     public void changePassWord(Long userId, @Valid UserPasswordRequestDto request){
-        User user = checkUser(userId);
+        User user = getValidUser(userId);
         user.changePassword(request.getPassword());
     }
 

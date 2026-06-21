@@ -54,7 +54,7 @@ public class UserController {
                 .body(ApiResponse.of("회원 탈퇴 완료",result));
     }
 
-
+    //회원 정보 수정
     @PatchMapping("/{user_id}")
     public ResponseEntity<ApiResponse<UserChangeResponseDto>> changeUser(
             @PathVariable Long user_id,
@@ -68,6 +68,7 @@ public class UserController {
 
     }
 
+    //비빌번호 변경
     @PatchMapping("/{user_id}/password")
     public ResponseEntity<Void> changePassword (
             @PathVariable Long user_id,

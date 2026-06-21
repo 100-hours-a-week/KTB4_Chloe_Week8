@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
@@ -17,87 +18,97 @@ public class Post {
 
     //@Setter
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_id;
+    @Column(name="post_id")
+    private Long postId;
 
     private String title;
     private String content;
-    private String post_image;
-    private LocalDateTime datewritten;
 
-    @Setter
+    @Column(name="post_image")
+    private String postImage;
+
+    @Column(name="date_written")
+    private LocalDateTime dateWritten;
+
     @ManyToOne()
     @JoinColumn(name = "user_id")
-    private String writer;
+    private User writer;
 
 
     //신고 테이블에서 count 해서 가져와야 함..
     //@Setter
     //private int declare_count; //신고 횟수..
 
-    @Setter
-    private Boolean is_edited = false;
-    @Setter
-    private Boolean post_hide = false; //게시물 숨김 여부
+    @Column(name="is_edited")
+    private Boolean isEdited = false;
+
+    @Column(name="post_hide")
+    private Boolean postHide = false; //게시물 숨김 여부
 
 
-    @Setter
-    private Long like_count; //좋아요 관련
-    @Setter
-    private Long comment_count; //댓글 관련
-    @Setter
-    private Long view_count; //조회수
 
+    @Column(name="like_count")
+    private Long likeCount; //좋아요 관련
 
+    @Column(name="comment_count")
+    private Long commentCount; //댓글 관련
+
+    @Column(name="view_count")
+    private Long viewCount; //조회수
+
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
+    @Column(name="updated_at")
+    private LocalDateTime updatedAt;
+    @Column(name="deleted_at")
+    private LocalDateTime deletedAt;
 
 
     //게시글 생성용 생성자
-    public Post(String title,String content,String post_image,LocalDateTime datewritten){
+    public Post(String title, String content, String post_image, User writer, LocalDateTime datewritten){
         this.title = title;
         this.content = content;
-        this.post_image = post_image;
-        this.datewritten = datewritten;
+        this.postImage = post_image;
+        this.writer = writer;
+        this.dateWritten = datewritten;
+
+        this.likeCount = 0L;
+        this.commentCount = 0L;
+        this.viewCount = 0L;
+
+        this.createdAt = datewritten;
     }
 
-    //게시글 수정용 생성자
-    public Post(String title,String content,String post_image){
+    public void modifyPost (String title, String content, String post_image, LocalDateTime updatedAt){
         this.title = title;
         this.content = content;
-        this.post_image = post_image;
+        this.postImage = post_image;
+        this.updatedAt = updatedAt;
+        this.isEdited = true;
     }
 
-
-
-    public void modifyPost (String title, String content, String post_image,Boolean is_edited){
-        this.title = title;
-        this.content = content;
-        this.post_image = post_image;
-        this.is_edited = is_edited;
+    public void isDeleted(LocalDateTime deletedAt){
+        this.deletedAt = deletedAt;
     }
 
     public Long likeCount(Boolean is_liked){
         if( is_liked == true){
-            like_count++;
+            likeCount++;
         }
         else{
-            like_count--;
+            likeCount--;
         }
 
-        return like_count;
+        return likeCount;
     }
 
     public Long commentCountIncrement() {
-        return ++comment_count;
+        return ++commentCount;
     }
 
     public Long viewCountIncrement() {
-        return ++view_count;
+        return ++viewCount;
     }
 
 
-    public int getDeclare_count() {
-        return 1;
-    }
-
-    public void setDeclare_count(int i) {
-    }
 }

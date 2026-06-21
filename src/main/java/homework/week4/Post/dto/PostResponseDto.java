@@ -19,8 +19,6 @@ public class PostResponseDto {
     private LocalDateTime datewritten;
     private String writer;
 
-    private Boolean is_edited;
-
     private Long like_count;
     private Long comment_count;
     private Long view_count;
