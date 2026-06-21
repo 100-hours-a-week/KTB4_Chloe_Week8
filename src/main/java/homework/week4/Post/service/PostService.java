@@ -5,7 +5,9 @@ import homework.week4.Comment.service.CommentService;
 import homework.week4.Post.dto.*;
 import homework.week4.Post.entity.Like;
 import homework.week4.Post.entity.Post;
+import homework.week4.Post.entity.PostChangeHistory;
 import homework.week4.Post.entity.PostReportHistory;
+import homework.week4.Post.repository.ChangeRepository;
 import homework.week4.Post.repository.LikeRespoitory;
 import homework.week4.Post.repository.PostRepository;
 import homework.week4.Post.repository.ReportRepository;
@@ -34,6 +36,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final LikeRespoitory likeRespoitory;
     private final ReportRepository reportRepository;
+    private final ChangeRepository changeRepository;
 
     private final UserService userService;
     private final CommentService commentService;
@@ -150,6 +153,19 @@ public class PostService {
                 request.getPostImage(),
                 updatedDateTime
         );
+
+        //게시글 수정 이력 보존
+        PostChangeHistory postChangeHistory = new PostChangeHistory(
+                post,
+                updatedDateTime,
+                request.getTitle(),
+                request.getContent(),
+                request.getPostImage()
+        );
+
+        //수정 이력 저장
+        changeRepository.save(postChangeHistory);
+
     }
 
     //게시글 삭제
