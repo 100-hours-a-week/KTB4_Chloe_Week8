@@ -1,9 +1,6 @@
 package homework.week4.Comment.controller;
 
-import homework.week4.Comment.dto.CommentContentResponseDto;
-import homework.week4.Comment.dto.CommentDeleteResponseDto;
-import homework.week4.Comment.dto.CommentRequestDto;
-import homework.week4.Comment.dto.CommentResponseDto;
+import homework.week4.Comment.dto.*;
 import homework.week4.Comment.service.CommentService;
 import homework.week4.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -32,14 +29,15 @@ public class CommentController {
                 .body(ApiResponse.of("댓글 생성 완료",result));
     }
 
+    //대댓글 생성 요청
     @PostMapping("/{comment_id}/replies")
-    public ResponseEntity<ApiResponse<CommentResponseDto>> createChileComment(
+    public ResponseEntity<ApiResponse<ChildCommentResponseDto>> createChileComment(
             @PathVariable Long user_id,
             @PathVariable Long post_id,
             @PathVariable Long comment_id,
             @Valid @RequestBody CommentRequestDto request
     ){
-        CommentResponseDto result = commentService.createChildComment(user_id, post_id, comment_id,request);
+        ChildCommentResponseDto result = commentService.createChildComment(user_id, post_id, comment_id,request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

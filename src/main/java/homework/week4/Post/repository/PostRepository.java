@@ -19,10 +19,10 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("""
         SELECT p
         FROM Post p
-        WHERE p.isDeleted = false
-        AND p.id < :cursorId
+        WHERE p.deletedAt IS NULL
+        AND p.postId < :cursorId
         AND post_hide = false
-        ORDER BY p.id DESC
+        ORDER BY p.postId DESC
     """)
     List<Post>findLatestPosts( @Param("cursorId")Long cursorId, Pageable pageable );
 
@@ -30,9 +30,9 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("""
         SELECT p
         FROM Post p
-        WHERE p.isDeleted = false
-        AND p.id = :postId
-        AND postHide = false
+        WHERE p.deletedAt IS NULL
+        AND p.postId = :postId
+        AND p.postHide = false
     """)
     Optional<Post> findPost(@Param("postId") Long postId);
 

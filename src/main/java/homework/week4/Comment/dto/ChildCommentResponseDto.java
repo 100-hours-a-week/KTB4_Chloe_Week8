@@ -9,11 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentResponseDto {
-
+public class ChildCommentResponseDto {
+    private Long parentCommentId;
     private Long commentId;
     private String commenter;
     private String commentContent;
     private LocalDateTime commentDateWritten;
-
 }

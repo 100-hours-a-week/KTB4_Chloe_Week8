@@ -75,6 +75,9 @@ public class Post {
         this.title = title;
         this.content = content;
         this.postImage = post_image;
+
+        // 게시글 보일 때, 수정 일시로 보이도록
+        this.dateWritten = updatedAt;
         this.updatedAt = updatedAt;
         this.isEdited = true;
     }

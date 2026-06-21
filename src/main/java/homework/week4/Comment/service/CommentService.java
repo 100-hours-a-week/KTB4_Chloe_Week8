@@ -1,13 +1,15 @@
 package homework.week4.Comment.service;
 
-import homework.week4.Comment.dto.CommentContentResponseDto;
-import homework.week4.Comment.dto.CommentDeleteResponseDto;
-import homework.week4.Comment.dto.CommentRequestDto;
-import homework.week4.Comment.dto.CommentResponseDto;
+import homework.week4.Comment.dto.*;
 import homework.week4.Comment.entity.Comment;
 import homework.week4.Comment.repository.CommentRepository;
+import homework.week4.Post.entity.Post;
+import homework.week4.Post.service.PostService;
+import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.ForbiddenException;
+import homework.week4.exception.NotFoundException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,53 +25,77 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+
     private final UserService userService;
+    private final PostService postService;
 
-    public CommentResponseDto createComment(Long user_id,Long post_id, @Valid CommentRequestDto request){
-        userService.getValidUser(user_id); //에외가 일어나면 밑에도 실행 X
-        LocalDateTime currentDateTime = LocalDateTime.now();
+    //일반 댓글 생성
+    @Transactional
+    public CommentResponseDto createComment(Long userId, Long postId, @Valid CommentRequestDto request){
+        User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
+        Post post = postService.getValidPost(postId);
+        LocalDateTime createdDateTime = LocalDateTime.now();
 
         Comment comment = new Comment(
+                user,
+                post,
                 request.getComment_content(),
-                currentDateTime
+                createdDateTime
         );
 
-        Comment commentdto = commentRepository.createComment(user_id,post_id,comment);
+        commentRepository.save(comment);
+
         return new CommentResponseDto(
-                commentdto.getParent_comment_id(),
-                commentdto.getComment_id(),
-                commentdto.getCommenter(),
-                commentdto.getComment_content(),
-                commentdto.getComment_datewritten()
+                comment.getComment_id(),
+                comment.getCommenter().getNickname(),
+                comment.getCommentContent(),
+                comment.getCommentDateWritten()
         );
     }
 
-    public CommentResponseDto createChildComment(
-            Long user_id,
-            Long post_id,
-            Long comment_id,
+    // 댓글 검증 및 반환
+    public Comment getValidComment(Long commentId){
+        Comment comment = commentRepository.findComment(commentId).orElseThrow(
+                () -> new NotFoundException("해당 댓글이 존재하지 않습니다."));
+
+        return comment;
+    }
+
+    //대댓글 생성
+    public ChildCommentResponseDto createChildComment(
+            Long userId,
+            Long postId,
+            Long commentId,
             @Valid CommentRequestDto request){
-        userService.getValidUser(user_id); //에외가 일어나면 밑에도 실행 X
-        LocalDateTime currentDateTime = LocalDateTime.now();
 
-        Comment comment = new Comment(
+        User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
+        Post post = postService.getValidPost(postId);
+        Comment comment = getValidComment(commentId);
+
+        LocalDateTime createdDateTime = LocalDateTime.now();
+
+        Comment childcomment = new Comment(
+                user,
+                post,
+                comment,
                 request.getComment_content(),
-                currentDateTime
+                createdDateTime
         );
 
-        Comment commentdto = commentRepository.createChildComment(user_id,post_id,comment_id,comment);
-        return new CommentResponseDto(
-                commentdto.getParent_comment_id(),
-                commentdto.getComment_id(),
-                commentdto.getCommenter(),
-                commentdto.getComment_content(),
-                commentdto.getComment_datewritten()
+        commentRepository.save(childcomment);
+        return new ChildCommentResponseDto(
+                childcomment.getParent().getCommentId(),
+                childcomment.getCommentId(),
+                childcomment.getCommenter().getNickname(),
+                childcomment.getCommentContent(),
+                childcomment.getCommentDateWritten()
         );
     }
+
 
     //댓글 목록 반환 -> 상세 게시글을 위해
-    public List<CommentResponseDto> listComment (Long post_id){
-        List<Comment> commentsList = commentRepository.listComment(post_id);
+    public List<CommentResponseDto> listComment (Long postId){
+        List<Comment> commentsList = commentRepository.findAll(postId);
 
         List<CommentResponseDto> commentsListDto = new ArrayList<>();
         for(Comment commenttdto : commentsList){
