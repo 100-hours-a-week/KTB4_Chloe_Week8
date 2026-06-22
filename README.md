@@ -2,7 +2,7 @@
 ## 프로젝트 초기 설정
 <img width="865" height="493" alt="image" src="https://github.com/user-attachments/assets/fb4101fe-c5e9-4ef3-96e0-ef8115c3fb91" />
 
-## 구현상의 한계
+## 구현상의 한계 (4주차)
 
 ### Spring security는 사용하지 않고 진행
 
@@ -14,3 +14,11 @@
 
 - DB가 존재하지 않아서, 생성되는 데이터를 `HashMap`을 이용해서 저장하고 관리
 - JPA 의존성도 받지 않았기 때문에, `@Entity` `@Transactional` 사용하지 않음
+
+
+## 수정된 프로젝트 구현 (6주차)
+- H2 DB 사용히여 구현
+- Spring Data JPA 사용하여 구현
+
+
+
