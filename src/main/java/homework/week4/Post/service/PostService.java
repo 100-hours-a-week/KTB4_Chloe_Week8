@@ -1,6 +1,7 @@
 package homework.week4.Post.service;
 
 import homework.week4.Comment.dto.CommentResponseDto;
+import homework.week4.Comment.repository.CommentRepository;
 import homework.week4.Comment.service.CommentService;
 import homework.week4.Post.dto.*;
 import homework.week4.Post.entity.Like;
@@ -37,6 +38,7 @@ public class PostService {
     private final LikeRespoitory likeRespoitory;
     private final ReportRepository reportRepository;
     private final ChangeRepository changeRepository;
+    private final CommentRepository commentRepository;
 
     private final UserService userService;
     private final CommentService commentService;
@@ -175,6 +177,8 @@ public class PostService {
         LocalDateTime deletedDateTime = LocalDateTime.now();
 
         post.isDeleted(deletedDateTime);
+        //게시글을 참조하고 있는 댓글 다 삭제..
+        commentRepository.deletePostIdComment(postId,deletedDateTime);
 
     }
 
