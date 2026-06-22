@@ -4,7 +4,6 @@ import homework.week4.Comment.dto.*;
 import homework.week4.Comment.entity.Comment;
 import homework.week4.Comment.repository.CommentRepository;
 import homework.week4.Post.entity.Post;
-import homework.week4.Post.service.PostService;
 import homework.week4.Post.service.PostVerifyService;
 import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;

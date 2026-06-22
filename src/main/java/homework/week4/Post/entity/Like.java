@@ -4,9 +4,11 @@ import homework.week4.User.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "likes")
 public class Like {

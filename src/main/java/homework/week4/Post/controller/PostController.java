@@ -117,7 +117,7 @@ public class PostController {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.of("좋아요 요청 완료",result));
+                .body(ApiResponse.of("좋아요 삭제 완료",result));
     }
 
 }
