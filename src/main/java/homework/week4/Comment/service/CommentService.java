@@ -170,8 +170,8 @@ public class CommentService {
 
 
         if(comment.getIsHavingChild()){
-            //대댓글이 있는 일반 댓글 블라인드 처리 + 삭제 일시 추가
-            comment.isBlindedTrue(deletedDateTime);
+            //대댓글이 있는 일반 댓글 블라인드 처리 + 댓글 본문에 "알수 없는 댓글이다" 추가
+            comment.isBlindedTrue();
         }
         else{
             //대댓글이 없는 댓글 삭제 일시 추가

@@ -87,9 +87,9 @@ public class Comment {
         this.updatedAt = updatedAt;
     }
 
-    public void isBlindedTrue(LocalDateTime deletedAt){
+    public void isBlindedTrue(){
         this.isBlinded = true;
-        this.deletedAt = deletedAt;
+        this.commentContent = "알수 없는 댓글입니다.";
     }
 
     public void isDeleted(LocalDateTime deletedAt){
