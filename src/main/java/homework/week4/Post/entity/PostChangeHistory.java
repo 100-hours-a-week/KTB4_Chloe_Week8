@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @AllArgsConstructor
 public class PostChangeHistory {
@@ -14,9 +15,9 @@ public class PostChangeHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long changeId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post postId;
+    private Post post;
 
     @Column(name ="changed_at")
     private LocalDateTime changedAt;
@@ -37,7 +38,7 @@ public class PostChangeHistory {
             String changedContetnt,
             String changedPostImage
             ){
-        this.postId = postId;
+        this.post = postId;
         this.changedAt = changedAt;
         this.changedTitle = changedTitle;
         this.changedContetnt = changedContetnt;

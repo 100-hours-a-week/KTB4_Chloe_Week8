@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Entity
 @Getter
 @AllArgsConstructor
 public class Like {
@@ -14,16 +15,16 @@ public class Like {
     @Column(name = "like_id")
     private Long likeId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post postId;
+    private Post post;
 
     public Like (User userId,Post postId){
-        this.userId = userId;
-        this.postId = postId;
+        this.user = userId;
+        this.post = postId;
     }
 }

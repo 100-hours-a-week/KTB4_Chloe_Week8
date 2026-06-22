@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @AllArgsConstructor
 public class PostReportHistory {
@@ -16,20 +17,20 @@ public class PostReportHistory {
     @Column (name = "report_id")
     private Long reportId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    private Post postId;
+    private Post post;
 
     @Column (name = "reported_at")
     private LocalDateTime reportedAt;
 
     public  PostReportHistory(User userId,Post postId,LocalDateTime reportedAt){
-        this.userId = userId;
-        this.postId = postId;
+        this.user = userId;
+        this.post = postId;
         this.reportedAt = reportedAt;
 
     }

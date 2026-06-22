@@ -21,7 +21,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
         FROM Post p
         WHERE p.deletedAt IS NULL
         AND p.postId < :cursorId
-        AND post_hide = false
+        AND p.postHide = false
         ORDER BY p.postId DESC
     """)
     List<Post>findLatestPosts( @Param("cursorId")Long cursorId, Pageable pageable );

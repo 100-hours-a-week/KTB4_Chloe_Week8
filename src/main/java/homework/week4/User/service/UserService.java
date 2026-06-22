@@ -24,14 +24,14 @@ public class UserService {
 
     //이메일 중복 검사
     public void emailDuplicateCheck(String email){
-        if(!userRepository.existsByEmail(email)){
+        if(userRepository.existsByEmail(email)){
             throw new DuplicateResourceException("중복된 이메일이 존재합니다.");
         }
     }
 
     //닉네임 중복 검사
     public void nicknameDuplicateCheck(String email){
-        if(!userRepository.existsByNickname(email)){
+        if(userRepository.existsByNickname(email)){
             throw new DuplicateResourceException("중복된 닉네임이 존재합니다.");
         }
     }
@@ -59,7 +59,7 @@ public class UserService {
 
     //사용자 여부 확인
     public void checkUser(Long userId){
-        if(!userRepository.existsByIdAndIsMemberTrue(userId)){
+        if(!userRepository.existsByuserIdAndIsMemberTrue(userId)){
             throw new NotFoundException("해당 사용자가 존재하지 않습니다.");
         }
     }
@@ -67,7 +67,7 @@ public class UserService {
 
     //사용자 확인 및 반환
     public User getValidUser(Long userId){
-        User user = userRepository.findByIdAndIsMemberTrue(userId).orElseThrow(
+        User user = userRepository.findByuserIdAndIsMemberTrue(userId).orElseThrow(
                 () -> new NotFoundException("해당 사용자 정보가 존재하지 않습니다."));
 
         return user;

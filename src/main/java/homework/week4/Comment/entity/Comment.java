@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,14 +27,14 @@ public class Comment {
     private Post post;
 
     // 자기 참조 ( 부모 댓글 (1) <-> 대댓글들(N) )
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private Comment parent;
 
-    @OneToMany(mappedBy = "parentCommentId")
+    @OneToMany(mappedBy = "parent")
     private List<Comment> childrenComments = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="user_id")
     private User commenter;
 

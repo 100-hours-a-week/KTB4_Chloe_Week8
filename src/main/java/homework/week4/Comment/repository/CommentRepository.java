@@ -22,5 +22,12 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     """)
     Optional<Comment> findComment(@Param("commentId") Long commentId);
 
-    List<Comment> findAll(Long postId);
+
+    @Query("""
+    SELECT c
+    FROM Comment c
+    WHERE c.deletedAt IS NULL
+    AND c.post.postId = :postId
+    """)
+    List<Comment> findAllByPostId(@Param("postId") Long postId);
 }

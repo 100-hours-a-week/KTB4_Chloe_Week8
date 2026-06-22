@@ -5,6 +5,7 @@ import homework.week4.Comment.entity.Comment;
 import homework.week4.Comment.repository.CommentRepository;
 import homework.week4.Post.entity.Post;
 import homework.week4.Post.service.PostService;
+import homework.week4.Post.service.PostVerifyService;
 import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.ForbiddenException;
@@ -27,13 +28,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     private final UserService userService;
-    private final PostService postService;
+    private final PostVerifyService postVerifyService;
 
     //일반 댓글 생성
     @Transactional
     public CommentResponseDto createComment(Long userId, Long postId, @Valid CommentRequestDto request){
         User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
-        Post post = postService.getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
         LocalDateTime createdDateTime = LocalDateTime.now();
 
         Comment comment = new Comment(
@@ -63,7 +64,7 @@ public class CommentService {
             @Valid CommentRequestDto request){
 
         User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
-        Post post = postService.getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
         Comment comment = getValidComment(commentId); //부모 댓글
 
         LocalDateTime createdDateTime = LocalDateTime.now();
@@ -103,7 +104,7 @@ public class CommentService {
 
     //댓글 목록 반환 -> 상세 게시글을 위해
     public List<CommentResponseDto> listComment (Long postId){
-        List<Comment> commentsList = commentRepository.findAll(postId);
+        List<Comment> commentsList = commentRepository.findAllByPostId(postId);
 
         List<CommentResponseDto> commentsListDto = new ArrayList<>();
         for(Comment commentdto : commentsList){
@@ -139,7 +140,7 @@ public class CommentService {
             @Valid CommentRequestDto request){
 
         userService.checkUser(userId);
-        postService.checkPost(postId);
+        postVerifyService.checkPost(postId);
         verifyCommentOwner(userId,commentId,"댓글 수정 권한이 없습니다.");
 
         Comment comment = getValidComment(commentId);
@@ -160,7 +161,7 @@ public class CommentService {
             Long commentId
     ){
         userService.getValidUser(userId);
-        postService.checkPost(postId);
+        postVerifyService.checkPost(postId);
         verifyCommentOwner(userId,commentId,"댓글 삭제 권한이 없습니다.");
 
         Comment comment = getValidComment(commentId); //삭제할 댓글

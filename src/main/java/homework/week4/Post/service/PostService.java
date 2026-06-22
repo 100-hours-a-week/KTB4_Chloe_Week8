@@ -40,6 +40,7 @@ public class PostService {
 
     private final UserService userService;
     private final CommentService commentService;
+    private final PostVerifyService postVerifyService;
 
     //게시글 등록
     @Transactional
@@ -93,25 +94,12 @@ public class PostService {
         return postsListDto;
     }
 
-    //게시글 확인 및 반환
-    public Post getValidPost(Long postId){
-        Post post = postRepository.findPost(postId).orElseThrow(
-                () -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
-
-        return post;
-    }
-
-    public void checkPost(Long postId){
-        if(!(postRepository.existsPost(postId))){
-            throw new NotFoundException("해당 게시글이 존재하지 않습니다.");
-        }
-    }
 
 
     // 상세 게시글 조회
     public PostDetailResponseDto getPost(Long userId, Long postId){
         userService.checkUser(userId);
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
 
         post.viewCountIncrement();
 
@@ -136,7 +124,7 @@ public class PostService {
 
     //게시글 사용자 인증 -> 수정,삭제 할 때만  사용
     public void verifyPostOwner(Long userId,Long postId,String message){
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
         if(!(userId.equals(post.getWriter().getUserId()))){
             throw new ForbiddenException(message);
         }
@@ -149,7 +137,7 @@ public class PostService {
         userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
         verifyPostOwner(userId,postId,"게시글 수정 권한이 없습니다.");//게시물에 대한 변경 권한 없음..
 
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
         //게시글 수정
@@ -180,7 +168,7 @@ public class PostService {
         userService.checkUser(userId);
         verifyPostOwner(userId,postId,"게시글 삭제 권한이 없습니다.");
 
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
         LocalDateTime deletedDateTime = LocalDateTime.now();
 
         post.isDeleted(deletedDateTime);
@@ -193,13 +181,13 @@ public class PostService {
 
         //게시글 & 사용자 검증 다 함.
         User user = userService.getValidUser(userId);
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
 
         Like like = new Like(user,post);
 
         likeRespoitory.save(like);
 
-        Long likeCount = likeRespoitory.CountByPostPostId(postId);
+        Long likeCount = likeRespoitory.countByPostPostId(postId);
 
         post.likeCount(likeCount);
 
@@ -211,7 +199,7 @@ public class PostService {
     public PostLikeResponseDto cancelLike(Long userId, Long postId){
 
         User user = userService.getValidUser(userId);
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
 
         Like like = likeRespoitory.findByUserUserIdAndPostPostId(user.getUserId(),post.getPostId())
                 .orElseThrow(() -> new NotFoundException("해당 좋아요가 존재하지 않습니다."));
@@ -220,7 +208,7 @@ public class PostService {
         likeRespoitory.delete(like);
 
         //삭제가 적용된 좋아요 수 반환
-        Long likeCount = likeRespoitory.CountByPostPostId(postId);
+        Long likeCount = likeRespoitory.countByPostPostId(postId);
 
         //좋아요 수 게시글 likeCount에 업데이트
         post.likeCount(likeCount);
@@ -234,7 +222,7 @@ public class PostService {
     @Transactional
     public PostReportResponseDto reportPost(Long userId, Long postId){
         User user = userService.getValidUser(userId);
-        Post post = getValidPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
 
         LocalDateTime reportedDateTime = LocalDateTime.now();
 

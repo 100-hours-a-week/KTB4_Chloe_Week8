@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Entity
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
@@ -27,7 +28,7 @@ public class Post {
     @Column(name="date_written")
     private LocalDateTime dateWritten;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User writer;
 
