@@ -2,7 +2,6 @@ package homework.week4.Comment.repository;
 
 import homework.week4.Comment.entity.Comment;
 
-import homework.week4.Post.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
