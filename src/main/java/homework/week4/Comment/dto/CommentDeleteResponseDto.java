@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CommentDeleteResponseDto {
-    private Boolean unknown_mark;
+    private Boolean isBlinded;
 }

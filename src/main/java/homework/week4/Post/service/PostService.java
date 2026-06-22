@@ -101,6 +101,12 @@ public class PostService {
         return post;
     }
 
+    public void checkPost(Long postId){
+        if(!(postRepository.existsPost(postId))){
+            throw new NotFoundException("해당 게시글이 존재하지 않습니다.");
+        }
+    }
+
 
     // 상세 게시글 조회
     public PostDetailResponseDto getPost(Long userId, Long postId){
@@ -241,7 +247,7 @@ public class PostService {
         int reportCount = reportRepository.countByPostPostId(postId);
 
         if(reportCount == 5){
-            post.PostHide();
+            post.PostHideTrue();
         }
 
         return new PostReportResponseDto(

@@ -43,9 +43,9 @@ public class Comment {
     private LocalDateTime commentDateWritten;
 
     @Column(name =" is_having_child")
-    private Boolean isHavingChild;
+    private Boolean isHavingChild = false;
     @Column(name =" is_blinded")
-    private Boolean isBlinded;
+    private Boolean isBlinded = false;
 
     @Column(name="created_at")
     private LocalDateTime createdAt;
@@ -56,6 +56,7 @@ public class Comment {
     
 
 
+    //일반 댓글 생성자
     public Comment(User user, Post post, String comment_content, LocalDateTime createdAt){
         this.commenter = user;
         this.post = post;
@@ -64,6 +65,7 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
+    //대댓글 생성자
     public Comment(User user, Post post, Comment parent, String comment_content, LocalDateTime createdAt){
         this.commenter = user;
         this.post = post;
@@ -73,10 +75,25 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
+    public void isHavingChildTrue(){
+        this.isHavingChild = true;
+    }
+
+
     public void modifyComment(String comment_content,LocalDateTime updatedAt){
         this.commentContent = comment_content;
         this.commentDateWritten = updatedAt;
         this.updatedAt = updatedAt;
     }
+
+    public void isBlindedTrue(LocalDateTime deletedAt){
+        this.isBlinded = true;
+        this.deletedAt = deletedAt;
+    }
+
+    public void isDeleted(LocalDateTime deletedAt){
+        this.deletedAt = deletedAt;
+    }
+
 
 }

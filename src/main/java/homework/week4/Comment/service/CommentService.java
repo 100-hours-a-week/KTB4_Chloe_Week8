@@ -39,30 +39,24 @@ public class CommentService {
         Comment comment = new Comment(
                 user,
                 post,
-                request.getComment_content(),
+                request.getCommentContent(),
                 createdDateTime
         );
 
         commentRepository.save(comment);
 
         return new CommentResponseDto(
-                comment.getComment_id(),
+                comment.getParent().getCommentId(),
+                comment.getCommentId(),
                 comment.getCommenter().getNickname(),
                 comment.getCommentContent(),
                 comment.getCommentDateWritten()
         );
     }
 
-    // 댓글 검증 및 반환
-    public Comment getValidComment(Long commentId){
-        Comment comment = commentRepository.findComment(commentId).orElseThrow(
-                () -> new NotFoundException("해당 댓글이 존재하지 않습니다."));
-
-        return comment;
-    }
-
     //대댓글 생성
-    public ChildCommentResponseDto createChildComment(
+    @Transactional
+    public CommentResponseDto createChildComment(
             Long userId,
             Long postId,
             Long commentId,
@@ -70,7 +64,7 @@ public class CommentService {
 
         User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
         Post post = postService.getValidPost(postId);
-        Comment comment = getValidComment(commentId);
+        Comment comment = getValidComment(commentId); //부모 댓글
 
         LocalDateTime createdDateTime = LocalDateTime.now();
 
@@ -78,12 +72,15 @@ public class CommentService {
                 user,
                 post,
                 comment,
-                request.getComment_content(),
+                request.getCommentContent(),
                 createdDateTime
         );
 
+        comment.isHavingChildTrue(); //부모 댓글 자식 있다고 설정
+
+
         commentRepository.save(childcomment);
-        return new ChildCommentResponseDto(
+        return new CommentResponseDto(
                 childcomment.getParent().getCommentId(),
                 childcomment.getCommentId(),
                 childcomment.getCommenter().getNickname(),
@@ -93,19 +90,30 @@ public class CommentService {
     }
 
 
+    // 댓글 검증 및 반환
+    public Comment getValidComment(Long commentId){
+        Comment comment = commentRepository.findComment(commentId).orElseThrow(
+                () -> new NotFoundException("해당 댓글이 존재하지 않습니다."));
+
+        return comment;
+    }
+
+
+
+
     //댓글 목록 반환 -> 상세 게시글을 위해
     public List<CommentResponseDto> listComment (Long postId){
         List<Comment> commentsList = commentRepository.findAll(postId);
 
         List<CommentResponseDto> commentsListDto = new ArrayList<>();
-        for(Comment commenttdto : commentsList){
+        for(Comment commentdto : commentsList){
             commentsListDto.add(
                     new CommentResponseDto(
-                            commenttdto.getParent_comment_id(),
-                            commenttdto.getComment_id(),
-                            commenttdto.getCommenter(),
-                            commenttdto.getComment_content(),
-                            commenttdto.getComment_datewritten()
+                            commentdto.getParent().getCommentId(),
+                            commentdto.getCommentId(),
+                            commentdto.getCommenter().getNickname(),
+                            commentdto.getCommentContent(),
+                            commentdto.getCommentDateWritten()
                     )
 
             );
@@ -113,41 +121,64 @@ public class CommentService {
         return commentsListDto;
     }
 
-    public void verifyCommentOwner(Long user_id,Long post_id,String Emessage){
-        if(commentRepository.checkCommentOwner(user_id,post_id)){
-            return;
+    //댓글 사용자 인증 -> 수정,삭제 할 때만  사용
+    public void verifyCommentOwner(Long userId,Long commentId,String message){
+        Comment comment = getValidComment(commentId);
+
+        if(!(userId.equals(comment.getCommenter().getUserId()))){
+            throw new ForbiddenException(message);
+        }
+    }
+
+    //댓글 수정
+    @Transactional
+    public CommentContentResponseDto modifyComment(
+            Long userId,
+            Long postId,
+            Long commentId,
+            @Valid CommentRequestDto request){
+
+        userService.checkUser(userId);
+        postService.checkPost(postId);
+        verifyCommentOwner(userId,commentId,"댓글 수정 권한이 없습니다.");
+
+        Comment comment = getValidComment(commentId);
+
+        LocalDateTime updatedDateTime = LocalDateTime.now();
+
+        comment.modifyComment(request.getCommentContent(),updatedDateTime);
+
+        return new CommentContentResponseDto(comment.getCommentContent());
+
+    }
+
+    //댓글 삭제
+    @Transactional
+    public CommentDeleteResponseDto deleteComment(
+            Long userId,
+            Long postId,
+            Long commentId
+    ){
+        userService.getValidUser(userId);
+        postService.checkPost(postId);
+        verifyCommentOwner(userId,commentId,"댓글 삭제 권한이 없습니다.");
+
+        Comment comment = getValidComment(commentId); //삭제할 댓글
+
+        LocalDateTime deletedDateTime = LocalDateTime.now();
+
+
+        if(comment.getIsHavingChild()){
+            //대댓글이 있는 일반 댓글 블라인드 처리 + 삭제 일시 추가
+            comment.isBlindedTrue(deletedDateTime);
+        }
+        else{
+            //대댓글이 없는 댓글 삭제 일시 추가
+            comment.isDeleted(deletedDateTime);
         }
 
-        throw new ForbiddenException(Emessage);
-    }
 
-    public CommentContentResponseDto modifyComment(
-            Long user_id,
-            Long comment_id,
-            @Valid CommentRequestDto request){
-        userService.getValidUser(user_id);
-        verifyCommentOwner(user_id,comment_id,"댓글 수정 권한이 없습니다.");
-
-        Comment modifycontent = new Comment(
-                request.getComment_content()
-        );
-
-        Comment commentdto = commentRepository.modifyComment(comment_id,modifycontent);
-
-        return new CommentContentResponseDto(commentdto.getComment_content());
-
-    }
-
-    public CommentDeleteResponseDto deleteComment(
-            Long user_id,
-            Long comment_id
-    ){
-        userService.getValidUser(user_id);
-        verifyCommentOwner(user_id,comment_id,"댓글 삭제 권한이 없습니다.");
-
-        Boolean unknown_mark = commentRepository.deleteComment(comment_id);
-
-        return new CommentDeleteResponseDto(unknown_mark);
+        return new CommentDeleteResponseDto(comment.getIsBlinded());
     }
 
 

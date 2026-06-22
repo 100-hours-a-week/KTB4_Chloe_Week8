@@ -31,13 +31,13 @@ public class CommentController {
 
     //대댓글 생성 요청
     @PostMapping("/{comment_id}/replies")
-    public ResponseEntity<ApiResponse<ChildCommentResponseDto>> createChileComment(
+    public ResponseEntity<ApiResponse<CommentResponseDto>> createChileComment(
             @PathVariable Long user_id,
             @PathVariable Long post_id,
             @PathVariable Long comment_id,
             @Valid @RequestBody CommentRequestDto request
     ){
-        ChildCommentResponseDto result = commentService.createChildComment(user_id, post_id, comment_id,request);
+        CommentResponseDto result = commentService.createChildComment(user_id, post_id, comment_id,request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -47,10 +47,11 @@ public class CommentController {
     @PutMapping("/{comment_id}")
     public ResponseEntity<ApiResponse<CommentContentResponseDto>> modifyComment(
             @PathVariable Long user_id,
+            @PathVariable Long post_id,
             @PathVariable Long comment_id,
             @Valid @RequestBody CommentRequestDto request
     ){
-        CommentContentResponseDto result = commentService.modifyComment(user_id,comment_id,request);
+        CommentContentResponseDto result = commentService.modifyComment(user_id,post_id,comment_id,request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -60,9 +61,10 @@ public class CommentController {
     @DeleteMapping("/{comment_id}")
     public ResponseEntity<ApiResponse<CommentDeleteResponseDto>> deleteComment(
             @PathVariable Long user_id,
+            @PathVariable Long post_id,
             @PathVariable Long comment_id
     ){
-        CommentDeleteResponseDto result = commentService.deleteComment(user_id,comment_id);
+        CommentDeleteResponseDto result = commentService.deleteComment(user_id,post_id,comment_id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of("댓글 삭제 완료",result));

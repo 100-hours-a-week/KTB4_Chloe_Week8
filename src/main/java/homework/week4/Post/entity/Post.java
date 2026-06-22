@@ -86,7 +86,7 @@ public class Post {
         this.deletedAt = deletedAt;
     }
 
-    public void PostHide(){
+    public void PostHideTrue(){
         this.postHide = true;
     }
 
