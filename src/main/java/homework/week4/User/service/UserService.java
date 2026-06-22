@@ -6,7 +6,7 @@ import homework.week4.User.repository.UserRepository;
 import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.NotFoundException;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -10,7 +10,7 @@ import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.NotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,9 +45,9 @@ public class CommentService {
         );
 
         commentRepository.save(comment);
+        post.commentCountIncrement();
 
         return new CommentResponseDto(
-                comment.getParent().getCommentId(),
                 comment.getCommentId(),
                 comment.getCommenter().getNickname(),
                 comment.getCommentContent(),
@@ -57,7 +57,7 @@ public class CommentService {
 
     //대댓글 생성
     @Transactional
-    public CommentResponseDto createChildComment(
+    public ChildCommentResponseDto createChildComment(
             Long userId,
             Long postId,
             Long commentId,
@@ -77,11 +77,12 @@ public class CommentService {
                 createdDateTime
         );
 
+        commentRepository.save(childcomment);
         comment.isHavingChildTrue(); //부모 댓글 자식 있다고 설정
 
+        post.commentCountIncrement();
 
-        commentRepository.save(childcomment);
-        return new CommentResponseDto(
+        return new ChildCommentResponseDto(
                 childcomment.getParent().getCommentId(),
                 childcomment.getCommentId(),
                 childcomment.getCommenter().getNickname(),
@@ -110,7 +111,6 @@ public class CommentService {
         for(Comment commentdto : commentsList){
             commentsListDto.add(
                     new CommentResponseDto(
-                            commentdto.getParent().getCommentId(),
                             commentdto.getCommentId(),
                             commentdto.getCommenter().getNickname(),
                             commentdto.getCommentContent(),

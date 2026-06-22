@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Table(name = "posts")
 public class Post {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,12 +96,13 @@ public class Post {
         this.likeCount = likCount;
     }
 
-    public Long commentCountIncrement() {
-        return ++commentCount;
+    public void commentCountIncrement() {
+        this.commentCount = commentCount + 1;
     }
 
-    public Long viewCountIncrement() {
-        return ++viewCount;
+    public void viewCountIncrement() {
+
+        this.viewCount = viewCount+1;
     }
 
 

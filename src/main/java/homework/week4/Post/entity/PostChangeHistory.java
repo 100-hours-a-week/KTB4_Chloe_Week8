@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @AllArgsConstructor
+@Table(name = "post_change_history")
 public class PostChangeHistory {
 
     @Id

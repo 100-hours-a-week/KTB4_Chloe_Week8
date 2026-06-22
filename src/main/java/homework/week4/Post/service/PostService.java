@@ -15,7 +15,7 @@ import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.NotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -97,6 +97,7 @@ public class PostService {
 
 
     // 상세 게시글 조회
+    @Transactional(readOnly = true)
     public PostDetailResponseDto getPost(Long userId, Long postId){
         userService.checkUser(userId);
         Post post = postVerifyService.getValidPost(postId);
@@ -115,6 +116,8 @@ public class PostService {
                 post.getViewCount()
 
         );
+
+        post.viewCountIncrement();
 
         List<CommentResponseDto> commentResponseDto = commentService.listComment(postId);
 

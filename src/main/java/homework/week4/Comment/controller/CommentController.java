@@ -31,13 +31,13 @@ public class CommentController {
 
     //대댓글 생성 요청
     @PostMapping("/{comment_id}/replies")
-    public ResponseEntity<ApiResponse<CommentResponseDto>> createChileComment(
+    public ResponseEntity<ApiResponse<ChildCommentResponseDto>> createChileComment(
             @PathVariable Long user_id,
             @PathVariable Long post_id,
             @PathVariable Long comment_id,
             @Valid @RequestBody CommentRequestDto request
     ){
-        CommentResponseDto result = commentService.createChildComment(user_id, post_id, comment_id,request);
+        ChildCommentResponseDto result = commentService.createChildComment(user_id, post_id, comment_id,request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

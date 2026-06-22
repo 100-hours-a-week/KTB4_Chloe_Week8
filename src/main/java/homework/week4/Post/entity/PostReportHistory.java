@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @AllArgsConstructor
+@Table(name = "post_report_history")
 public class PostReportHistory {
 
     @Id

@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "comments")
 public class Comment {
 
     @Id

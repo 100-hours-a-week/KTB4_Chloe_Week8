@@ -8,6 +8,7 @@ import lombok.Getter;
 @Entity
 @Getter
 @AllArgsConstructor
+@Table(name = "likes")
 public class Like {
 
     @Id
