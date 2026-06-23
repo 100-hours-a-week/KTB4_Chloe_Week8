@@ -29,6 +29,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("""
         SELECT p
         FROM Post p
+        JOIN FETCH p.writer
         WHERE p.deletedAt IS NULL
         AND p.postId = :postId
         AND p.postHide = false
