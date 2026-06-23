@@ -1,9 +1,7 @@
 package homework.week4.Post.repository;
 
 import homework.week4.Post.entity.Post;
-import homework.week4.User.entity.User;
-import homework.week4.User.repository.UserRepository;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +18,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
         SELECT p
         FROM Post p
         WHERE p.deletedAt IS NULL
-        AND p.postId < :cursorId
+        AND p.postId <= :cursorId
         AND p.postHide = false
         ORDER BY p.postId DESC
     """)

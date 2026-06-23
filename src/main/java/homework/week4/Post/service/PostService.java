@@ -72,6 +72,7 @@ public class PostService {
     }
 
     //게시글 목록 조회
+    @Transactional(readOnly = true)
     public List<PostResponseDto> listPost (Long userId, Long cursorId, int limitCount) {
         userService.checkUser(userId); //사용자 여부 확인
         Pageable pageable = PageRequest.of(0, limitCount);
