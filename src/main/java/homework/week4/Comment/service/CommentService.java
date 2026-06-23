@@ -103,6 +103,7 @@ public class CommentService {
 
 
     //댓글 목록 반환 -> 상세 게시글을 위해
+    @Transactional(readOnly = true)
     public List<CommentResponseDto> listComment (Long postId){
         List<Comment> commentsList = commentRepository.findAllByPostId(postId);
 

@@ -76,6 +76,7 @@ public class UserService {
 
 
     //사용자 조회
+    @Transactional(readOnly = true)
     public UserGetResponseDto lookupUser(Long userId){
 
         User user = getValidUser(userId);

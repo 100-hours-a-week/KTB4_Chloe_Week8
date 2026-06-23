@@ -27,6 +27,7 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     @Query("""
     SELECT c
     FROM Comment c
+    JOIN FETCH c.commenter
     WHERE c.deletedAt IS NULL
     AND c.post.postId = :postId
     """)
