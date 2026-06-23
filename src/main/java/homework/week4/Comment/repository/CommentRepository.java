@@ -25,11 +25,12 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
 
 
     @Query("""
-    SELECT c
-    FROM Comment c
-    JOIN FETCH c.commenter
-    WHERE c.deletedAt IS NULL
-    AND c.post.postId = :postId
+        SELECT c
+        FROM Comment c
+        JOIN FETCH c.commenter
+        WHERE c.deletedAt IS NULL
+        AND c.post.postId = :postId
+        ORDER BY c.commentId DESC
     """)
     List<Comment> findAllByPostId(@Param("postId") Long postId);
 

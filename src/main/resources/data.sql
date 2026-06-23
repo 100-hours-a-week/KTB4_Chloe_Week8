@@ -36,7 +36,7 @@ VALUES
 
     (3, 1, 2, NULL, '블라인드 처리된 댓글입니다.',
      CURRENT_TIMESTAMP, false, true,
-     CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP);
+     CURRENT_TIMESTAMP, NULL, NULL);
 
 -- likes
 INSERT INTO likes
