@@ -87,3 +87,9 @@ ALTER TABLE `post_report_history` ADD CONSTRAINT `PK_POST_REPORT_HISTORY` PRIMAR
                                                                                        `report_id`
     );
 
+CREATE INDEX idx_posts_post_id
+    ON posts (post_id);
+
+CREATE INDEX idx_comments_post_id_comment_id
+    ON comments (comment_id);
+
