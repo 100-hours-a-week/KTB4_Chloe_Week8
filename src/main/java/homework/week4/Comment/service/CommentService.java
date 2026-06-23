@@ -50,7 +50,8 @@ public class CommentService {
                 comment.getCommentId(),
                 comment.getCommenter().getNickname(),
                 comment.getCommentContent(),
-                comment.getCommentDateWritten()
+                comment.getCommentDateWritten(),
+                comment.getIsBlinded()
         );
     }
 
@@ -114,7 +115,8 @@ public class CommentService {
                             commentdto.getCommentId(),
                             commentdto.getCommenter().getNickname(),
                             commentdto.getCommentContent(),
-                            commentdto.getCommentDateWritten()
+                            commentdto.getCommentDateWritten(),
+                            commentdto.getIsBlinded()
                     )
 
             );

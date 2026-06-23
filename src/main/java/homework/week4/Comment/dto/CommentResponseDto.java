@@ -15,5 +15,6 @@ public class CommentResponseDto {
     private String commenter;
     private String commentContent;
     private LocalDateTime commentDateWritten;
+    private Boolean isBlinded;
 
 }
