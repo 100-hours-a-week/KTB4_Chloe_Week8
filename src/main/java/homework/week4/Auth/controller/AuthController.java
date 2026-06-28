@@ -22,9 +22,14 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginResponseDto>> LoginUser (@Valid @RequestBody LoginRequestDto request){
 
         LoginResponseDto result = authService.LoginUser(request);
+
+        LoginResponseDto response = new LoginResponseDto(
+                result.getUser_id(),
+                "http://127.0.0.1:5500/Board/board.html"
+        );
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.of("로그인 성공",result));
+                .body(ApiResponse.of("로그인 성공",response));
 
     }
 }

@@ -7,4 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoginResponseDto {
     private Long user_id;
+    private String link;
+
+    public LoginResponseDto(Long userId) {
+        this.user_id = userId;
+    }
 }
