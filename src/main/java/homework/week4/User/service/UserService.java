@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -38,7 +40,7 @@ public class UserService {
 
     //사용자 등록
     @Transactional
-    public SignUpResponseDto createUser(@Valid SignUpRequestDto request) {
+    public SignUpResponseDto createUser(@Valid @ModelAttribute SignUpRequestDto request) {
 
         //중복 검사
         emailDuplicateCheck(request.getEmail());
@@ -46,11 +48,21 @@ public class UserService {
 
         LocalDateTime createdDateTime = LocalDateTime.now();
 
+        MultipartFile file = request.getProfile_image();
+
+        String profileImagePath = null;
+
+        if (file != null && !file.isEmpty()) {
+            profileImagePath = "/images/" + file.getOriginalFilename();
+
+            // 실제 파일 저장 로직은 나중에 추가
+        }
+
         User user = new User(
                 request.getEmail(),
                 request.getPassword(),
                 request.getNickname(),
-                request.getProfile_image(),
+                profileImagePath,
                 createdDateTime
         );
         userRepository.save(user);
@@ -80,6 +92,8 @@ public class UserService {
     public UserGetResponseDto lookupUser(Long userId){
 
         User user = getValidUser(userId);
+
+
 
         return new UserGetResponseDto(
                 user.getEmail(),

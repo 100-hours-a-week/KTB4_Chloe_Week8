@@ -1,12 +1,14 @@
 package homework.week4.User.controller;
 
 
+import homework.week4.Auth.dto.LoginResponseDto;
 import homework.week4.User.dto.*;
 
 import homework.week4.response.ApiResponse;
 import homework.week4.User.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -14,6 +16,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@CrossOrigin(origins="http://127.0.0.1:5500")
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -22,14 +25,20 @@ public class UserController {
     private final UserService userService;
 
     //회원 가입 -> 사용자 생성
-    @PostMapping
-    public ResponseEntity<Void> createUser(@Valid @RequestBody SignUpRequestDto request) {
-
-       userService.createUser(request);
+    @PostMapping (consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<SignUpResponseDto>> createUser(@Valid @ModelAttribute SignUpRequestDto request) {
+        System.out.println("회원가입 컨트롤러 진입");
+        System.out.println(request.getEmail());
+        System.out.println(request.getProfile_image());
+       SignUpResponseDto result = userService.createUser(request);
+        SignUpResponseDto response = new SignUpResponseDto(
+                result.getUser_id(),
+                "http://127.0.0.1:5500/Login/login.html"
+        );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .build();
+                .body(ApiResponse.of("회원 가입 완료",response));
     }
 
     //회원 정보 조회

@@ -5,8 +5,10 @@ import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-
+@Setter
 @Getter
 @NoArgsConstructor
 public class SignUpRequestDto {
@@ -25,6 +27,6 @@ public class SignUpRequestDto {
             message = "닉네임은 10자 아하 입니다.")
     private String nickname;
 
-    private String profile_image;
+    private MultipartFile profile_image;
 
 }
