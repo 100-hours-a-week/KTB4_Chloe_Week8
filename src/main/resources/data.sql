@@ -2,7 +2,7 @@
 INSERT INTO users
 (user_id, email, password, nickname, profile_image, is_member, created_at, updated_at, deleted_at)
 VALUES
-    (1, 'user1@test.com', 'User1234**', '유저1', NULL, true, CURRENT_TIMESTAMP, NULL, NULL),
+    (1, 'user1@test.com', 'User1234**', '유저1', '/UploadPhoto/ProfileImage/2UEEC49619S3TS3UD3V7.jpg', true, CURRENT_TIMESTAMP, NULL, NULL),
     (2, 'user2@test.com', '1234', '유저2', NULL, true, CURRENT_TIMESTAMP, NULL, NULL),
     (3, 'deleted@test.com', '1234', '탈퇴유저', NULL, false, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP);
 

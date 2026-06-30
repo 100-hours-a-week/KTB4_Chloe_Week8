@@ -14,6 +14,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 
@@ -53,9 +57,26 @@ public class UserService {
         String profileImagePath = null;
 
         if (file != null && !file.isEmpty()) {
-            profileImagePath = "/images/" + file.getOriginalFilename();
 
-            // 실제 파일 저장 로직은 나중에 추가
+            String uploadDir = "src/main/resources/static/UploadPhoto/ProfileImage";
+
+            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
+
+            Path savePath = directoryPath.resolve(file.getOriginalFilename());
+
+            try {
+                Files.createDirectories(directoryPath);
+                System.out.println("저장 경로 = " + savePath.toAbsolutePath());
+
+                profileImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
+
+                file.transferTo(savePath.toFile());
+
+                System.out.println("파일 저장 성공");
+            } catch (IOException | IllegalStateException e) {
+                e.printStackTrace();
+                throw new RuntimeException("파일 저장에 실패했습니다.", e);
+            }
         }
 
         User user = new User(
@@ -121,13 +142,34 @@ public class UserService {
     //사용자 정보 수정
     @Transactional
     public UserChangeResponseDto changeUser(Long userId, @Valid UserChangeRequestDto request){
+        nicknameDuplicateCheck(request.getNickname());
         User user = getValidUser(userId);
 
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
+        MultipartFile file = request.getProfileImage();
+
+        String profileImagePath = null;
+
+        if (file != null && !file.isEmpty()) {
+
+            String uploadDir = "src/main/resources/static/UploadPhoto/ProfileImage";
+            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
+            Path savePath = directoryPath.resolve(file.getOriginalFilename());
+
+            try {
+                Files.createDirectories(directoryPath);
+                profileImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
+                file.transferTo(savePath.toFile());
+
+            } catch (IOException | IllegalStateException e) {
+                throw new RuntimeException("파일 저장에 실패했습니다.", e);
+            }
+        }
+
         //여기서 JPA 알아서 변경 감지!!
         user.changeNickname(request.getNickname(),updatedDateTime);
-        user.changeProfileImgae(request.getProfileImage());
+        user.changeProfileImgae(profileImagePath);
 
 
         return new UserChangeResponseDto(user.getNickname(), user.getProfileImage());

@@ -9,5 +9,5 @@ public class UserChangeResponseDto {
 
 
     private String nickname;
-    private String profile_image;
+    private String profileImage;
 }

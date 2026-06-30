@@ -27,9 +27,6 @@ public class UserController {
     //회원 가입 -> 사용자 생성
     @PostMapping (consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<SignUpResponseDto>> createUser(@Valid @ModelAttribute SignUpRequestDto request) {
-        System.out.println("회원가입 컨트롤러 진입");
-        System.out.println(request.getEmail());
-        System.out.println(request.getProfile_image());
        SignUpResponseDto result = userService.createUser(request);
         SignUpResponseDto response = new SignUpResponseDto(
                 result.getUser_id(),
@@ -57,17 +54,25 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDeleteResponseDto>> deleteUser(@PathVariable Long user_id) {
 
         UserDeleteResponseDto result = userService.deleteUser(user_id);
+        UserDeleteResponseDto response = new UserDeleteResponseDto(
+                result.getNickname(),
+                result.getIs_member(),
+                "http://127.0.0.1:5500/Login/login.html"
+        );
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.of("회원 탈퇴 완료",result));
+                .body(ApiResponse.of("회원 탈퇴 완료",response));
     }
 
     //회원 정보 수정
-    @PatchMapping("/{user_id}")
+    @PatchMapping(
+            value = "/{user_id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<ApiResponse<UserChangeResponseDto>> changeUser(
             @PathVariable Long user_id,
-            @Valid @RequestBody UserChangeRequestDto request) {
+            @Valid  @ModelAttribute UserChangeRequestDto request) {
 
         UserChangeResponseDto result = userService.changeUser(user_id,request);
 

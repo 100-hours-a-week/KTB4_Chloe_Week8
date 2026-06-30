@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-
+@Setter
 @Getter
 @NoArgsConstructor
 public class UserChangeRequestDto {
@@ -16,6 +18,6 @@ public class UserChangeRequestDto {
             message = "닉네임은 최대 10자입니다.")
     private String nickname;
 
-    private String profileImage;
+    private MultipartFile profileImage;
 
 }

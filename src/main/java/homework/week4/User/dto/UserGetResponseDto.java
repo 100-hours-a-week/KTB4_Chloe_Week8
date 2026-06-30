@@ -10,5 +10,5 @@ public class UserGetResponseDto {
 
     private String email;
     private String nickname;
-    private String profile_image;
+    private String profileImage;
 }
