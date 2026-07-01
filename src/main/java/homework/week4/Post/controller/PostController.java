@@ -43,13 +43,26 @@ public class PostController {
     )
     public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
             @PathVariable Long user_id,
-            @Valid @ModelAttribute PostRequestDto request){
+            @Valid @ModelAttribute PostRequestDto request) {
 
-        PostResponseDto result = postService.createPost(user_id,request);
+        PostResponseDto result = postService.createPost(user_id, request);
+
+        PostResponseDto response = new PostResponseDto(
+                result.getPost_id(),
+                result.getTitle(),
+                result.getContent(),
+                result.getPost_image(),
+                result.getDatewritten(),
+                result.getWriter(),
+                result.getLike_count(),
+                result.getComment_count(),
+                result.getView_count(),
+                "http://127.0.0.1:5500/Post_detail/post_detail.html?postId=" + result.getPost_id()
+        );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.of("게시글 생성 완료",result));
+                .body(ApiResponse.of("게시글 생성 완료", response));
     }
 
     @GetMapping("/{user_id}/{post_id}")
