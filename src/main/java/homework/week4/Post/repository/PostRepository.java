@@ -15,14 +15,14 @@ import java.util.*;
 public interface PostRepository extends JpaRepository<Post,Long> {
 
     @Query("""
-        SELECT p
-        FROM Post p
-        JOIN FETCH p.writer
-        WHERE p.deletedAt IS NULL
-        AND p.postId <= :cursorId
-        AND p.postHide = false
-        ORDER BY p.postId DESC
-    """)
+    SELECT p
+    FROM Post p
+    JOIN FETCH p.writer
+    WHERE p.deletedAt IS NULL
+    AND (:cursorId IS NULL OR p.postId < :cursorId)
+    AND p.postHide = false
+    ORDER BY p.postId DESC
+""")
     List<Post>findLatestPosts( @Param("cursorId")Long cursorId, Pageable pageable );
 
 
