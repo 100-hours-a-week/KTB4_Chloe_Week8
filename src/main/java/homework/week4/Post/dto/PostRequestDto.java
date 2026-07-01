@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
@@ -19,7 +20,7 @@ public class PostRequestDto {
     @NotBlank(message ="게시글 본문은 필수값 입니다.")
     private String content;
 
-    private String postImage;
+    private MultipartFile postImage;
 
 
 }

@@ -18,7 +18,58 @@ VALUES
      0, 3, 0, CURRENT_TIMESTAMP, NULL, NULL),
 
     (3, 1, '삭제 게시글', '삭제된 게시글입니다.', NULL, CURRENT_TIMESTAMP, false, false,
-     0, 0, 0, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP);
+     0, 0, 0, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP),
+
+    (4, 2, '네 번째 게시글', '네 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+        1, 5, 2, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (5, 1, '다섯 번째 게시글', '다섯 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     3, 12, 5, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (6, 2, '여섯 번째 게시글', '여섯 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     0, 7, 1, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (7, 1, '일곱 번째 게시글', '일곱 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     4, 20, 7, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (8, 2, '여덟 번째 게시글', '여덟 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     2, 9, 3, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (9, 1, '아홉 번째 게시글', '아홉 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     1, 15, 2, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (10, 2, '열 번째 게시글', '열 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     0, 6, 0, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (11, 1, '열한 번째 게시글', '열한 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     5, 30, 10, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (12, 2, '열두 번째 게시글', '열두 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, true, false,
+     0, 2, 0, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (13, 1, '열세 번째 게시글', '열세 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     2, 18, 4, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (14, 2, '열네 번째 게시글', '열네 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     3, 14, 6, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (15, 1, '열다섯 번째 게시글', '열다섯 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     0, 4, 1, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (16, 2, '열여섯 번째 게시글', '열여섯 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     1, 11, 2, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (17, 1, '열일곱 번째 게시글', '열일곱 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     2, 22, 5, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (18, 2, '열여덟 번째 게시글', '열여덟 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     4, 25, 8, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (19, 1, '열아홉 번째 게시글', '열아홉 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     0, 1, 0, CURRENT_TIMESTAMP, NULL, NULL),
+
+    (20, 2, '스무 번째 게시글', '스무 번째 게시글 내용입니다.', NULL, CURRENT_TIMESTAMP, false, false,
+     3, 16, 4, CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP);
 
 -- comments
 INSERT INTO comments

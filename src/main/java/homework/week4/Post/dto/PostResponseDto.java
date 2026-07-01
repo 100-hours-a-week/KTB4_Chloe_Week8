@@ -22,4 +22,6 @@ public class PostResponseDto {
     private Long like_count;
     private Long comment_count;
     private Long view_count;
+
+    //private String link;
 }

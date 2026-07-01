@@ -25,6 +25,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +53,40 @@ public class PostService {
 
     //게시글 등록
     @Transactional
-    public PostResponseDto createPost(Long userId, @Valid PostRequestDto request ){
+    public PostResponseDto createPost(Long userId, @Valid @ModelAttribute PostRequestDto request ){
         User writer = userService.getValidUser(userId);
         LocalDateTime createdDateTime = LocalDateTime.now();
+
+        MultipartFile file = request.getPostImage();
+        String postImagePath = null;
+
+        if (file != null && !file.isEmpty()) {
+
+            String uploadDir = "src/main/resources/static/UploadPhoto/PostImage";
+
+            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
+
+            Path savePath = directoryPath.resolve(file.getOriginalFilename());
+
+            try {
+                Files.createDirectories(directoryPath);
+                System.out.println("저장 경로 = " + savePath.toAbsolutePath());
+
+                postImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
+
+                file.transferTo(savePath.toFile());
+
+                System.out.println("파일 저장 성공");
+            } catch (IOException | IllegalStateException e) {
+                e.printStackTrace();
+                throw new RuntimeException("파일 저장에 실패했습니다.", e);
+            }
+        }
 
         Post post = new Post(
                 request.getTitle(),
                 request.getContent(),
-                request.getPostImage(),
+                postImagePath,
                 writer,
                 createdDateTime
         );
@@ -139,18 +172,44 @@ public class PostService {
 
     //게시글 수정
     @Transactional
-    public void modifyPost (Long userId,Long postId, @Valid PostRequestDto request){
+    public void modifyPost (Long userId,Long postId, @Valid @ModelAttribute PostRequestDto request){
         userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
         verifyPostOwner(userId,postId,"게시글 수정 권한이 없습니다.");//게시물에 대한 변경 권한 없음..
 
         Post post = postVerifyService.getValidPost(postId);
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
+        MultipartFile file = request.getPostImage();
+        String postImagePath = null;
+
+        if (file != null && !file.isEmpty()) {
+
+            String uploadDir = "src/main/resources/static/UploadPhoto/PostImage";
+
+            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
+
+            Path savePath = directoryPath.resolve(file.getOriginalFilename());
+
+            try {
+                Files.createDirectories(directoryPath);
+                System.out.println("저장 경로 = " + savePath.toAbsolutePath());
+
+                postImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
+
+                file.transferTo(savePath.toFile());
+
+                System.out.println("파일 저장 성공");
+            } catch (IOException | IllegalStateException e) {
+                e.printStackTrace();
+                throw new RuntimeException("파일 저장에 실패했습니다.", e);
+            }
+        }
+
         //게시글 수정
         post.modifyPost(
                 request.getTitle(),
                 request.getContent(),
-                request.getPostImage(),
+                postImagePath,
                 updatedDateTime
         );
 
@@ -160,7 +219,7 @@ public class PostService {
                 updatedDateTime,
                 request.getTitle(),
                 request.getContent(),
-                request.getPostImage()
+                postImagePath
         );
 
         //수정 이력 저장

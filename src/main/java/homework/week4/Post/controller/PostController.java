@@ -7,6 +7,7 @@ import homework.week4.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +37,13 @@ public class PostController {
 
     }
 
-    @PostMapping("/{user_id}")
+    @PostMapping(
+            value = "/{user_id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
             @PathVariable Long user_id,
-            @Valid @RequestBody PostRequestDto request){
+            @Valid @ModelAttribute PostRequestDto request){
 
         PostResponseDto result = postService.createPost(user_id,request);
 
