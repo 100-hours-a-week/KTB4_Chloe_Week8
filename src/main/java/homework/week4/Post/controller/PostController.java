@@ -65,7 +65,7 @@ public class PostController {
                 .body(ApiResponse.of("게시글 생성 완료", response));
     }
 
-    @GetMapping("/{user_id}/{post_id}")
+    @GetMapping( "/{user_id}/{post_id}")
     public ResponseEntity<ApiResponse<PostDetailResponseDto>> getPost(
             @PathVariable Long user_id,
             @PathVariable Long post_id
@@ -76,11 +76,11 @@ public class PostController {
                 .body(ApiResponse.of("상세게시글 조회_성공",result));
     }
 
-    @PutMapping("/{user_id}/{post_id}")
+    @PutMapping(value = "/{user_id}/{post_id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> modifyPost(
             @PathVariable Long user_id,
             @PathVariable Long post_id,
-            @Valid @RequestBody PostRequestDto request
+            @Valid @ModelAttribute PostRequestDto request
     ){
         postService.modifyPost(user_id, post_id, request);
         return ResponseEntity
@@ -99,7 +99,7 @@ public class PostController {
                 .build();
     }
 
-    @PostMapping("/{user_id}/{post_id}/declartion")
+    @PostMapping("/{user_id}/{post_id}/declaration")
     public ResponseEntity<ApiResponse<PostReportResponseDto>> declarePost(
             @PathVariable Long user_id,
             @PathVariable Long post_id

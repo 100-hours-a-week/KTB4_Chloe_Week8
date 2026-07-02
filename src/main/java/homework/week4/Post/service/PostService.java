@@ -72,7 +72,7 @@ public class PostService {
                 Files.createDirectories(directoryPath);
                 System.out.println("저장 경로 = " + savePath.toAbsolutePath());
 
-                postImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
+                postImagePath = "/UploadPhoto/PostImage/" + file.getOriginalFilename();
 
                 file.transferTo(savePath.toFile());
 
@@ -172,7 +172,7 @@ public class PostService {
 
     //게시글 수정
     @Transactional
-    public void modifyPost (Long userId,Long postId, @Valid @ModelAttribute PostRequestDto request){
+    public void modifyPost (Long userId, Long postId, @Valid @ModelAttribute PostRequestDto request){
         userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
         verifyPostOwner(userId,postId,"게시글 수정 권한이 없습니다.");//게시물에 대한 변경 권한 없음..
 
