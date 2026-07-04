@@ -14,6 +14,7 @@ import homework.week4.Post.repository.PostRepository;
 import homework.week4.Post.repository.ReportRepository;
 import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
+import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -249,6 +250,12 @@ public class PostService {
         //게시글 & 사용자 검증 다 함.
         User user = userService.getValidUser(userId);
         Post post = postVerifyService.getValidPost(postId);
+
+        //좋아요 이미 있는지 확인
+        likeRespoitory.findByUserUserIdAndPostPostId(user.getUserId(), post.getPostId())
+                .ifPresent(like -> {
+                    throw new DuplicateResourceException("이미 존재하는 좋아요입니다.");
+                });
 
         Like like = new Like(user,post);
 
