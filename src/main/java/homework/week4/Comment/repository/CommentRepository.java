@@ -41,4 +41,13 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     WHERE c.post.postId = :postId
     """)
     void deletePostIdComment(@Param("postId") Long postId, @Param("deletedAt")LocalDateTime deletedAt);
+
+    @Query("""
+        SELECT c.post.postId
+        FROM Comment c
+        WHERE c.commentId = :commentId
+    """)
+    Long findPostIdByCommentId(@Param("commentId") Long commentId);
 }
+
+

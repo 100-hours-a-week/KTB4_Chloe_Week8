@@ -101,8 +101,6 @@ public class CommentService {
     }
 
 
-
-
     //댓글 목록 반환 -> 상세 게시글을 위해
     @Transactional(readOnly = true)
     public List<CommentResponseDto> listComment (Long postId){
@@ -133,6 +131,14 @@ public class CommentService {
         }
     }
 
+    public void verifyCommentInPost(Long postId,Long commentId){
+        Long postIdByComment = commentRepository.findPostIdByCommentId(commentId);
+
+        if(postId.equals(postIdByComment)){
+            throw new NotFoundException("해당 댓글이 게시글에 소속되어 있지 않습니다.");
+        }
+    }
+
     //댓글 수정
     @Transactional
     public CommentContentResponseDto modifyComment(
@@ -143,6 +149,7 @@ public class CommentService {
 
         userService.checkUser(userId);
         postVerifyService.checkPost(postId);
+        verifyCommentInPost(postId,commentId);
         verifyCommentOwner(userId,commentId,"댓글 수정 권한이 없습니다.");
 
         Comment comment = getValidComment(commentId);
@@ -164,6 +171,7 @@ public class CommentService {
     ){
         userService.getValidUser(userId);
         postVerifyService.checkPost(postId);
+        verifyCommentInPost(postId,commentId);
         verifyCommentOwner(userId,commentId,"댓글 삭제 권한이 없습니다.");
 
         Comment comment = getValidComment(commentId); //삭제할 댓글
