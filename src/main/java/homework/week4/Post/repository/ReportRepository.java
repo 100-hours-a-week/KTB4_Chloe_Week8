@@ -7,4 +7,6 @@ public interface ReportRepository extends JpaRepository<PostReportHistory,Long> 
 
     int countByPostPostId (Long PostId);
 
+    boolean existsByUserUserIdAndPostPostId(Long userId, Long postId);
+
 }

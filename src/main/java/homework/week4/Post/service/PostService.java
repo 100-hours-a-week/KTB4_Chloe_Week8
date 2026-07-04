@@ -291,12 +291,22 @@ public class PostService {
 
     }
 
+    //해당 신고가 존재하는지 확인
+    void verifyUserInPost(Long userId, Long postId){
+        if (reportRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
+            throw new DuplicateResourceException("이미 신고한 게시글입니다.");
+        }
+    }
+
 
     //게시글 신고
     @Transactional
     public PostReportResponseDto reportPost(Long userId, Long postId){
         User user = userService.getValidUser(userId);
         Post post = postVerifyService.getValidPost(postId);
+
+        //이미 신고한 게시글인지 확인
+        verifyUserInPost(userId,postId);
 
         LocalDateTime reportedDateTime = LocalDateTime.now();
 
@@ -308,7 +318,7 @@ public class PostService {
         //count 해서 신고 횟수 계산
         int reportCount = reportRepository.countByPostPostId(postId);
 
-        if(reportCount == 5){
+        if(reportCount >= 5){
             post.PostHideTrue();
         }
 
