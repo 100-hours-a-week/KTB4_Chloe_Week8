@@ -25,7 +25,10 @@ public class UserController {
     private final UserService userService;
 
     //회원 가입 -> 사용자 생성
-    @PostMapping (consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping (
+            value = "/signup",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<ApiResponse<SignUpResponseDto>> createUser(@Valid @ModelAttribute SignUpRequestDto request) {
        SignUpResponseDto result = userService.createUser(request);
         SignUpResponseDto response = new SignUpResponseDto(
