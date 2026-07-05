@@ -3,7 +3,6 @@ package homework.week4.Security.Userdetails;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

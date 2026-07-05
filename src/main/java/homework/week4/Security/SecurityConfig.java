@@ -84,12 +84,6 @@ public class SecurityConfig {
         // 허용할 HTTP 헤더 설정
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
-        // 브라우저에 노출할 헤더 설정
-        // configuration.setExposedHeaders(List.of("Custom-Header"));
-
-        // 자격 증명(쿠키, 인증 헤더 등)을 허용할지 여부
-        // configuration.setAllowCredentials(true);
-
         // 예비 요청(Preflight) 결과 캐시 시간 설정
         configuration.setMaxAge(3600L);
 
