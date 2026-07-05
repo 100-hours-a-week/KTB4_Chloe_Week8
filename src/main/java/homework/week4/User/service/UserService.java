@@ -1,5 +1,6 @@
 package homework.week4.User.service;
 
+import homework.week4.Security.SecurityConfig;
 import homework.week4.User.dto.*;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final SecurityConfig securityConfig;
 
     //이메일 중복 검사
     public void emailDuplicateCheck(String email){
@@ -79,9 +81,11 @@ public class UserService {
             }
         }
 
+        String HashPassword = securityConfig.passwordEncoder().encode(request.getPassword());
+
         User user = new User(
                 request.getEmail(),
-                request.getPassword(),
+                HashPassword,
                 request.getNickname(),
                 profileImagePath,
                 createdDateTime

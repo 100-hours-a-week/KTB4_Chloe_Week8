@@ -7,3 +7,6 @@ spring:
       max-request-size: 10MB
   jwt:
     secret: ${JWT_SECRET}
+  logging:
+    level:
+      org.hibernate.orm.jdbc.bind: trace

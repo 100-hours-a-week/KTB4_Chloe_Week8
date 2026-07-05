@@ -38,18 +38,29 @@ public class JwtTokenProvider {
                 .collect(Collectors.joining(","));
         long now = (new Date()).getTime();
 
-        // Access Token 생성
-        // 1일: 24 * 60 * 60 * 1000 = 86400000 밀리초
+        // Access Token: 1일
         Date accessTokenExpiresIn = new Date(now + 86400000);
+
+        // Refresh Token: 예시 7일
+        Date refreshTokenExpiresIn = new Date(now + 604800000);
+
         String accessToken = Jwts.builder()
                 .subject(authentication.getName())
                 .claim("auth", authorities)
                 .expiration(accessTokenExpiresIn)
                 .signWith(key)
                 .compact();
+
+        String refreshToken = Jwts.builder()
+                .subject(authentication.getName())
+                .expiration(refreshTokenExpiresIn)
+                .signWith(key)
+                .compact();
+
         return JwtToken.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

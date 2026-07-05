@@ -2,7 +2,9 @@ package homework.week4.Security.JWT;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 @AllArgsConstructor
 public class JwtToken {

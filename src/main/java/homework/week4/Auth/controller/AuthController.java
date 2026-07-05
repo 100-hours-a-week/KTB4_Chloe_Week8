@@ -24,7 +24,7 @@ public class AuthController {
         LoginResponseDto result = authService.LoginUser(request);
 
         LoginResponseDto response = new LoginResponseDto(
-                result.getUser_id(),
+                result.getJwtToken(),
                 "http://127.0.0.1:5500/Board/board.html"
         );
         return ResponseEntity
