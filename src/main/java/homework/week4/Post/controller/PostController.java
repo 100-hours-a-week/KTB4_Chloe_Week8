@@ -2,6 +2,7 @@ package homework.week4.Post.controller;
 
 import homework.week4.Post.dto.*;
 import homework.week4.Post.service.PostService;
+import homework.week4.Security.Userdetails.CustomUserDetails;
 import homework.week4.User.service.UserService;
 import homework.week4.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,15 +39,16 @@ public class PostController {
 
     }
 
+    //게시글 생성
     @PostMapping(
-            value = "/{user_id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse<PostResponseDto>> createPost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @ModelAttribute PostRequestDto request) {
 
-        PostResponseDto result = postService.createPost(user_id, request);
+        Long userId = userDetails.getUserId();
+        PostResponseDto result = postService.createPost(userId, request);
 
         PostResponseDto response = new PostResponseDto(
                 result.getPost_id(),

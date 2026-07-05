@@ -1,8 +1,14 @@
 package homework.week4.Security.JWT;
 
+import homework.week4.Security.Userdetails.CustomUserDetails;
+import homework.week4.User.entity.User;
+import homework.week4.User.repository.UserRepository;
+import homework.week4.exception.NotFoundException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -24,13 +29,15 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
     private final SecretKey key;
+    private final UserRepository userRepository;
 
-    public JwtTokenProvider(@Value("${JWT_SECRET}") String secretKey) {
+    public JwtTokenProvider(@Value("${JWT_SECRET}") String secretKey, UserRepository userRepository) {
+        this.userRepository = userRepository;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 1. 토큰 생성 메서드
+    // 1. 토큰 생성 메서드 ( access & refresh 토큰 둘다 생성 )
     public JwtToken createToken(Authentication authentication) {
         // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
@@ -77,9 +84,14 @@ public class JwtTokenProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        // UserDetails 객체를 만들어서 Authentication 리턴
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        //User 엔티티 가져오기
+        String email = claims.getSubject();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("해당 사용자를 찾을 수 없습니다."));
 
+        CustomUserDetails principal = new CustomUserDetails(user);
+
+        // CustomUserDetails 객체를 만들어서 Authentication 리턴
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);    }
 
     // 3. 토큰 유효성 검증
