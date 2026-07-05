@@ -1,16 +1,15 @@
 package homework.week4.User.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class SignUpRequestDto {
 
     @Email (message = "이메일 형식이 맞지 않습니다.")

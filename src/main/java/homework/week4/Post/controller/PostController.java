@@ -68,46 +68,50 @@ public class PostController {
                 .body(ApiResponse.of("게시글 생성 완료", response));
     }
 
-    @GetMapping( "/{user_id}/{post_id}")
+    @GetMapping( "/{post_id}")
     public ResponseEntity<ApiResponse<PostDetailResponseDto>> getPost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long post_id
     ){
-        PostDetailResponseDto result = postService.getPost(user_id,post_id);
+        Long userId = userDetails.getUserId();
+        PostDetailResponseDto result = postService.getPost(userId,post_id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.of("상세게시글 조회_성공",result));
     }
 
-    @PutMapping(value = "/{user_id}/{post_id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{post_id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> modifyPost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long post_id,
             @Valid @ModelAttribute PostRequestDto request
     ){
-        postService.modifyPost(user_id, post_id, request);
+        Long userId = userDetails.getUserId();
+        postService.modifyPost(userId, post_id, request);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 
-    @DeleteMapping("/{user_id}/{post_id}")
+    @DeleteMapping("/{post_id}")
     public ResponseEntity<Void> deletePost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long post_id
     ){
-        postService.deletePost(user_id,post_id);
+        Long userId = userDetails.getUserId();
+        postService.deletePost(userId,post_id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 
-    @PostMapping("/{user_id}/{post_id}/declaration")
+    @PostMapping("/{post_id}/declaration")
     public ResponseEntity<ApiResponse<PostReportResponseDto>> declarePost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long post_id
     ){
-        PostReportResponseDto result = postService.reportPost(user_id,post_id);
+        Long userId = userDetails.getUserId();
+        PostReportResponseDto result = postService.reportPost(userId,post_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -115,12 +119,13 @@ public class PostController {
     }
 
     //좋아요 등록
-    @PostMapping("/{user_id}/{post_id}/like")
+    @PostMapping("/{post_id}/like")
     public ResponseEntity<ApiResponse<PostLikeResponseDto>> likeCreatePost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long post_id
             ){
-        PostLikeResponseDto result = postService.createLike(user_id,post_id);
+        Long userId = userDetails.getUserId();
+        PostLikeResponseDto result = postService.createLike(userId,post_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -128,13 +133,14 @@ public class PostController {
     }
 
     //좋아요 취소
-    @DeleteMapping("/{user_id}/{post_id}/like")
+    @DeleteMapping("/{post_id}/like")
     public ResponseEntity<ApiResponse<PostLikeResponseDto>> likeCancelPost(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long post_id
 
     ){
-        PostLikeResponseDto result = postService.cancelLike(user_id,post_id);
+        Long userId = userDetails.getUserId();
+        PostLikeResponseDto result = postService.cancelLike(userId,post_id);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

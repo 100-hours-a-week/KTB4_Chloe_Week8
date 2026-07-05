@@ -7,6 +7,7 @@ import homework.week4.User.repository.UserRepository;
 import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.NotFoundException;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final SecurityConfig securityConfig;
+    private final PasswordEncoder passwordEncoder;
 
     //이메일 중복 검사
     public void emailDuplicateCheck(String email){
@@ -81,7 +82,7 @@ public class UserService {
             }
         }
 
-        String HashPassword = securityConfig.passwordEncoder().encode(request.getPassword());
+        String HashPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User(
                 request.getEmail(),

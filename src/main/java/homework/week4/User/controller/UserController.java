@@ -2,6 +2,7 @@ package homework.week4.User.controller;
 
 
 import homework.week4.Auth.dto.LoginResponseDto;
+import homework.week4.Security.Userdetails.CustomUserDetails;
 import homework.week4.User.dto.*;
 
 import homework.week4.response.ApiResponse;
@@ -9,6 +10,7 @@ import homework.week4.User.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -30,7 +32,7 @@ public class UserController {
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse<SignUpResponseDto>> createUser(@Valid @ModelAttribute SignUpRequestDto request) {
-       SignUpResponseDto result = userService.createUser(request);
+        SignUpResponseDto result = userService.createUser(request);
         SignUpResponseDto response = new SignUpResponseDto(
                 result.getUser_id(),
                 "http://127.0.0.1:5500/Login/login.html"
@@ -42,10 +44,13 @@ public class UserController {
     }
 
     //회원 정보 조회
-    @GetMapping("/{user_id}")
-    public ResponseEntity<ApiResponse<UserGetResponseDto>> lookupUser(@PathVariable Long user_id) {
+    @GetMapping
+    public ResponseEntity<ApiResponse<UserGetResponseDto>> lookupUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
 
-        UserGetResponseDto result = userService.lookupUser(user_id);
+        Long userId = userDetails.getUserId();
+        UserGetResponseDto result = userService.lookupUser(userId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -53,10 +58,13 @@ public class UserController {
     }
 
     //회원 탈퇴
-    @DeleteMapping("/{user_id}")
-    public ResponseEntity<ApiResponse<UserDeleteResponseDto>> deleteUser(@PathVariable Long user_id) {
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<UserDeleteResponseDto>> deleteUser(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getUserId();
 
-        UserDeleteResponseDto result = userService.deleteUser(user_id);
+        UserDeleteResponseDto result = userService.deleteUser(userId);
         UserDeleteResponseDto response = new UserDeleteResponseDto(
                 result.getNickname(),
                 result.getIs_member(),
@@ -70,14 +78,15 @@ public class UserController {
 
     //회원 정보 수정
     @PatchMapping(
-            value = "/{user_id}",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<ApiResponse<UserChangeResponseDto>> changeUser(
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid  @ModelAttribute UserChangeRequestDto request) {
 
-        UserChangeResponseDto result = userService.changeUser(user_id,request);
+        Long userId = userDetails.getUserId();
+
+        UserChangeResponseDto result = userService.changeUser(userId,request);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -86,12 +95,14 @@ public class UserController {
     }
 
     //비빌번호 변경
-    @PatchMapping("/{user_id}/password")
+    @PatchMapping("/password")
     public ResponseEntity<Void> changePassword (
-            @PathVariable Long user_id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody UserPasswordRequestDto request
     ){
-        userService.changePassWord(user_id, request);
+
+        Long userId = userDetails.getUserId();
+        userService.changePassWord(userId, request);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
