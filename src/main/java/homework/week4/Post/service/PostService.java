@@ -17,6 +17,7 @@ import homework.week4.User.service.UserService;
 import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.NotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -162,20 +163,13 @@ public class PostService {
     }
 
 
-    //게시글 사용자 인증 -> 수정,삭제 할 때만  사용
-    public void verifyPostOwner(Long userId,Long postId,String message){
-        Post post = postVerifyService.getValidPost(postId);
-        if(!(userId.equals(post.getWriter().getUserId()))){
-            throw new ForbiddenException(message);
-        }
-    }
 
 
     //게시글 수정
     @Transactional
+    @PreAuthorize("@postVerifyService.getValidPost(#postId).getWriter().getUserId().equals(authentication.principal.userId)")
     public void modifyPost (Long userId, Long postId, @Valid @ModelAttribute PostRequestDto request){
         userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
-        verifyPostOwner(userId,postId,"게시글 수정 권한이 없습니다.");//게시물에 대한 변경 권한 없음..
 
         Post post = postVerifyService.getValidPost(postId);
         LocalDateTime updatedDateTime = LocalDateTime.now();
@@ -230,9 +224,9 @@ public class PostService {
 
     //게시글 삭제
     @Transactional
+    @PreAuthorize("@postVerifyService.getValidPost(#postId).getWriter().getUserId().equals(authentication.principal.userId)")
     public void deletePost(Long userId, Long postId){
         userService.checkUser(userId);
-        verifyPostOwner(userId,postId,"게시글 삭제 권한이 없습니다.");
 
         Post post = postVerifyService.getValidPost(postId);
         LocalDateTime deletedDateTime = LocalDateTime.now();

@@ -9,6 +9,7 @@ import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.NotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -122,15 +123,7 @@ public class CommentService {
         return commentsListDto;
     }
 
-    //댓글 사용자 인증 -> 수정,삭제 할 때만  사용
-    public void verifyCommentOwner(Long userId,Long commentId,String message){
-        Comment comment = getValidComment(commentId);
-
-        if(!(userId.equals(comment.getCommenter().getUserId()))){
-            throw new ForbiddenException(message);
-        }
-    }
-
+    //해당 댓글이 게시글에 소속되어 있는건지
     public void verifyCommentInPost(Long postId,Long commentId){
         Long postIdByComment = commentRepository.findPostIdByCommentId(commentId);
 
@@ -141,6 +134,7 @@ public class CommentService {
 
     //댓글 수정
     @Transactional
+    @PreAuthorize("@commentService.getValidComment(#commentId).getCommenter().getUserId().equals(authentication.principal.userId)")
     public CommentContentResponseDto modifyComment(
             Long userId,
             Long postId,
@@ -150,7 +144,6 @@ public class CommentService {
         userService.checkUser(userId);
         postVerifyService.checkPost(postId);
         verifyCommentInPost(postId,commentId);
-        verifyCommentOwner(userId,commentId,"댓글 수정 권한이 없습니다.");
 
         Comment comment = getValidComment(commentId);
 
@@ -164,6 +157,7 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
+    @PreAuthorize("@CommentService.getValidComment(#commentId).getCommenter().getUserId().equals(authentication.principal.userId)")
     public CommentDeleteResponseDto deleteComment(
             Long userId,
             Long postId,
@@ -172,7 +166,6 @@ public class CommentService {
         userService.getValidUser(userId);
         postVerifyService.checkPost(postId);
         verifyCommentInPost(postId,commentId);
-        verifyCommentOwner(userId,commentId,"댓글 삭제 권한이 없습니다.");
 
         Comment comment = getValidComment(commentId); //삭제할 댓글
 
