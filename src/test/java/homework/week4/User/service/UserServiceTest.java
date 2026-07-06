@@ -1,9 +1,11 @@
 package homework.week4.User.service;
 
 import homework.week4.User.dto.SignUpRequestDto;
+import homework.week4.User.dto.UserGetResponseDto;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
 import homework.week4.exception.DuplicateResourceException;
+import homework.week4.exception.NotFoundException;
 import homework.week4.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -117,6 +122,55 @@ public class UserServiceTest {
         //실행 및 준비
         assertThrows(DuplicateResourceException.class,
                 () -> userService.createUser(request));
+    }
+
+    @Test
+    @DisplayName("로그인 후 발급된 토큰을 헤더에 붙이고 회원 정보 조회를 요청하면 성공한다.")
+    void userGetTest(){
+        //준비
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
+
+        User user = new User(
+            "chloe@test.com",
+            "Chloe1234**",
+            "chloe",
+            "이미지 경로",
+             createdAt
+        );
+
+        UserGetResponseDto response = new UserGetResponseDto(
+                user.getEmail(),
+                user.getNickname(),
+                user.getProfileImage()
+        );
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.of(user));
+
+
+        //실행
+        UserGetResponseDto result = userService.lookupUser(userId);
+
+        //검증
+        assertThat(result.getEmail()).isEqualTo(response.getEmail());
+        assertThat(result.getNickname()).isEqualTo(response.getNickname());
+        assertThat(result.getProfileImage()).isEqualTo(response.getProfileImage());
+
+    }
+
+    @Test
+    @DisplayName("회원 정보가 존재하지 않는다.")
+    void usetGet_NotFound(){
+        //준비
+        Long userId = 1L;
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.empty());
+
+        //실행 및 검증
+        assertThrows(NotFoundException.class,
+                () -> userService.lookupUser(userId));
     }
 
 }

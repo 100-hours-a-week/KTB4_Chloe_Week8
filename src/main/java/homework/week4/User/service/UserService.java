@@ -119,8 +119,6 @@ public class UserService {
 
         User user = getValidUser(userId);
 
-
-
         return new UserGetResponseDto(
                 user.getEmail(),
                 user.getNickname(),
