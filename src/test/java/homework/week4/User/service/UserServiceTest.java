@@ -224,4 +224,33 @@ public class UserServiceTest {
 
     }
 
+    @Test
+    @DisplayName("수정 가능한 회원 정보가 존재하지 않아서 예외가 발생한다.")
+    void changeUser_NotFoundTest(){
+        //준비
+        Long userId = 1L;
+
+        MockMultipartFile profileImage = new MockMultipartFile(
+                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
+                "profile.jpg",                // 원본 파일명
+                "image/jpeg",                 // 컨텐츠 타입
+                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
+        );
+
+        UserChangeRequestDto request = new UserChangeRequestDto(
+                "chloe1",
+                profileImage
+        );
+
+        given(userRepository.existsByNickname(request.getNickname()))
+                .willReturn(false);
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.empty());
+
+        //실행 및 검증
+        assertThrows(NotFoundException.class,() -> userService.changeUser(userId,request));
+
+
+    }
+
 }
