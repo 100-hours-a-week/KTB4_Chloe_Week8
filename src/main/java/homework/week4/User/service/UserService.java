@@ -39,8 +39,8 @@ public class UserService {
     }
 
     //닉네임 중복 검사
-    public void nicknameDuplicateCheck(String email){
-        if(userRepository.existsByNickname(email)){
+    public void nicknameDuplicateCheck(String nickname){
+        if(userRepository.existsByNickname(nickname)){
             throw new DuplicateResourceException("중복된 닉네임이 존재합니다.");
         }
     }

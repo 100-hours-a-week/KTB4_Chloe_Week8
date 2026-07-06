@@ -1,5 +1,6 @@
 package homework.week4.User.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserChangeRequestDto {
 
 

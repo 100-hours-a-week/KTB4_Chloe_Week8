@@ -1,12 +1,13 @@
 package homework.week4.User.service;
 
 import homework.week4.User.dto.SignUpRequestDto;
+import homework.week4.User.dto.UserChangeRequestDto;
+import homework.week4.User.dto.UserChangeResponseDto;
 import homework.week4.User.dto.UserGetResponseDto;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
 import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.NotFoundException;
-import homework.week4.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -140,9 +142,9 @@ public class UserServiceTest {
         );
 
         UserGetResponseDto response = new UserGetResponseDto(
-                user.getEmail(),
-                user.getNickname(),
-                user.getProfileImage()
+                "chloe@test.com",
+                "chloe",
+                "이미지 경로"
         );
 
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
@@ -171,6 +173,55 @@ public class UserServiceTest {
         //실행 및 검증
         assertThrows(NotFoundException.class,
                 () -> userService.lookupUser(userId));
+    }
+
+    @Test
+    @DisplayName("닉네임,이미지를 담아 정상적으로 요청하면 회원 정보 수정 성공한다.")
+    void changeUserTest(){
+        //준비
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
+
+        User user = new User(
+                "chloe@test.com",
+                "Chloe1234**",
+                "chloe",
+                "이미지 경로",
+                createdAt
+        );
+
+        MockMultipartFile profileImage = new MockMultipartFile(
+                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
+                "profile.jpg",                // 원본 파일명
+                "image/jpeg",                 // 컨텐츠 타입
+                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
+        );
+
+        UserChangeRequestDto request = new UserChangeRequestDto(
+                "chloe1",
+                profileImage
+        );
+
+        UserChangeResponseDto response = new UserChangeResponseDto(
+                "chloe1",
+                "/UploadPhoto/ProfileImage/profile.jpg"
+
+        );
+
+        given(userRepository.existsByNickname(request.getNickname()))
+                .willReturn(false);
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.of(user));
+
+        //실행
+        UserChangeResponseDto result = userService.changeUser(userId,request);
+
+        //검증
+        assertThat(result.getNickname()).isEqualTo(response.getNickname());
+        assertThat(result.getProfileImage()).isEqualTo(response.getProfileImage());
+
+
     }
 
 }
