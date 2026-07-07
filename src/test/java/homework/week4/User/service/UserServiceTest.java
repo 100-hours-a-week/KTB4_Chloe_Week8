@@ -1,5 +1,6 @@
 package homework.week4.User.service;
 
+import homework.week4.FileUpload.FileStorageService;
 import homework.week4.User.dto.*;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
@@ -13,13 +14,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -37,6 +35,9 @@ public class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private MultipartFile profileImage;
+    @Mock
+    private FileStorageService fileStorageService;
+
     @InjectMocks
     private UserService userService;
 
@@ -45,7 +46,6 @@ public class UserServiceTest {
     // 공통으로 쓸 필드 선언
     private Long userId;
     private LocalDateTime createdAt;
-    private MockMultipartFile MockprofileImage;
     private SignUpRequestDto MocksignUprequest;
 
     private User createTestUser(){
@@ -64,18 +64,11 @@ public class UserServiceTest {
         userId = 1L;
         createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
 
-      MockprofileImage = new MockMultipartFile(
-                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
-                "profile.jpg",                // 원본 파일명
-                "image/jpeg",                 // 컨텐츠 타입
-                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
-        );
-
         MocksignUprequest = new SignUpRequestDto(
                 "chloe@test.com",
                 "Chloe1234**",
                 "chloe",
-                MockprofileImage
+                profileImage
         );
 
         testUser = createTestUser();
@@ -89,6 +82,7 @@ public class UserServiceTest {
         given(userRepository.existsByEmail("chloe@test.com")).willReturn(false);
         given(userRepository.existsByNickname("chloe")).willReturn(false);
         given(passwordEncoder.encode("Chloe1234**")).willReturn("encodedPassword");
+        given(fileStorageService.fileStore(profileImage)).willReturn("/UploadPhoto/ProfileImage/profile.jpg");
 
         //실행
         userService.createUser(MocksignUprequest);
@@ -110,10 +104,6 @@ public class UserServiceTest {
         //준비
         given(userRepository.existsByEmail("chloe@test.com")).willReturn(false);
         given(userRepository.existsByNickname("chloe")).willReturn(false);
-        given(passwordEncoder.encode("Chloe1234**")).willReturn("encodedPassword");
-        given(profileImage.getOriginalFilename()).willReturn("profile.jpg");
-
-        Path savePath = Paths.get("/UploadPhoto/ProfileImage/profile.jpg");
 
         SignUpRequestDto signUprequest = new SignUpRequestDto(
                 "chloe@test.com",
@@ -122,9 +112,8 @@ public class UserServiceTest {
                 profileImage
         );
 
-        doThrow(IOException.class)
-                .when(profileImage)
-                .transferTo(savePath.toFile());
+        given(fileStorageService.fileStore(any(MultipartFile.class)))
+                .willThrow(new RuntimeException("파일 저장 실패"));
 
         // 검증 및 검증
         assertThrows(RuntimeException.class,
@@ -136,6 +125,7 @@ public class UserServiceTest {
     void DuplicateEmailTest(){
         //준비
         given(userRepository.existsByEmail("chloe@test.com")).willReturn(true);
+
 
         //실행 및 준비
         assertThrows(DuplicateResourceException.class,
@@ -196,7 +186,7 @@ public class UserServiceTest {
         //준비
         UserChangeRequestDto request = new UserChangeRequestDto(
                 "chloe1",
-                MockprofileImage
+                profileImage
         );
 
         UserChangeResponseDto response = new UserChangeResponseDto(
@@ -210,6 +200,7 @@ public class UserServiceTest {
 
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
                 .willReturn(Optional.of(testUser));
+        given(fileStorageService.fileStore(profileImage)).willReturn("/UploadPhoto/ProfileImage/profile.jpg");
 
         //실행
         UserChangeResponseDto result = userService.changeUser(userId,request);
@@ -230,21 +221,14 @@ public class UserServiceTest {
                 profileImage
         );
 
-
         given(userRepository.existsByNickname(request.getNickname()))
                 .willReturn(false);
 
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
                 .willReturn(Optional.of(testUser));
 
-        given(profileImage.getOriginalFilename()).willReturn("profile.jpg");
-
-        Path savePath = Paths.get("/UploadPhoto/ProfileImage/profile.jpg");
-
-
-        doThrow(IOException.class)
-                .when(profileImage)
-                .transferTo(savePath.toFile());
+        given(fileStorageService.fileStore(any(MultipartFile.class)))
+                .willThrow(new RuntimeException("파일 저장 실패"));
 
         // 검증 및 검증
         assertThrows(RuntimeException.class,
@@ -260,13 +244,12 @@ public class UserServiceTest {
         //준비
         UserChangeRequestDto request = new UserChangeRequestDto(
                 "chloe1",
-                MockprofileImage
+                profileImage
         );
 
-        given(userRepository.existsByNickname(request.getNickname()))
-                .willReturn(false);
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
                 .willReturn(Optional.empty());
+
 
         //실행 및 검증
         assertThrows(NotFoundException.class,() -> userService.changeUser(userId,request));

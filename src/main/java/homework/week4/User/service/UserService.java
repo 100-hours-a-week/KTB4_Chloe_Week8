@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDateTime;
 
-
 @Service
 @Validated
 @RequiredArgsConstructor
@@ -116,8 +115,10 @@ public class UserService {
     //사용자 정보 수정
     @Transactional
     public UserChangeResponseDto changeUser(Long userId, @Valid UserChangeRequestDto request){
-        nicknameDuplicateCheck(request.getNickname());
+
         User user = getValidUser(userId);
+        nicknameDuplicateCheck(request.getNickname());
+
 
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
