@@ -1,24 +1,8 @@
 # KTB4_Chloe_아무말 대잔치 커뮤니티
-## 프로젝트 초기 설정
-<img width="865" height="493" alt="image" src="https://github.com/user-attachments/assets/fb4101fe-c5e9-4ef3-96e0-ef8115c3fb91" />
+## 8주차
 
-## 구현상의 한계 (4주차)
+#### Spring Security를 통해 인증, 인가 구현
 
-### Spring security는 사용하지 않고 진행
-
-- JWT 방식을 사용하지 않았기 때문에 `user_id`로 대신 JWT 토큰의 역할을 대신 하도록 함.
-- 회원 가입 시에 `user_id`를 반환하지 않고, 로그인 시에 반환 하는것으로 변경
-- 거의 모든 API의 URL에`user_id`가 pathvariable로 포함되어 있음.
-
-### DB 없이 구현
-
-- DB가 존재하지 않아서, 생성되는 데이터를 `HashMap`을 이용해서 저장하고 관리
-- JPA 의존성도 받지 않았기 때문에, `@Entity` `@Transactional` 사용하지 않음
-
-
-## 수정된 프로젝트 구현 (6주차)
-- H2 DB 사용히여 구현
-- Spring Data JPA 사용하여 구현
-
+#### 유저 도메인(유저 관련 기능) 테스트 코드 작성
 
 
