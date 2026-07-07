@@ -1,6 +1,6 @@
 package homework.week4.User.service;
 
-import homework.week4.Security.SecurityConfig;
+import homework.week4.FileUpload.FileStorageService;
 import homework.week4.User.dto.*;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
@@ -14,12 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 
@@ -29,6 +24,7 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
     private final PasswordEncoder passwordEncoder;
 
     //이메일 중복 검사
@@ -55,32 +51,7 @@ public class UserService {
 
         LocalDateTime createdDateTime = LocalDateTime.now();
 
-        MultipartFile file = request.getProfile_image();
-
-        String profileImagePath = null;
-
-        if (file != null && !file.isEmpty()) {
-
-            String uploadDir = "src/main/resources/static/UploadPhoto/ProfileImage";
-
-            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
-
-            Path savePath = directoryPath.resolve(file.getOriginalFilename());
-
-            try {
-                Files.createDirectories(directoryPath);
-                System.out.println("저장 경로 = " + savePath.toAbsolutePath());
-
-                profileImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
-
-                file.transferTo(savePath.toFile());
-
-                System.out.println("파일 저장 성공");
-            } catch (IOException | IllegalStateException e) {
-                e.printStackTrace();
-                throw new RuntimeException("파일 저장에 실패했습니다.", e);
-            }
-        }
+        String profileImagePath = fileStorageService.fileStore(request.getProfile_image());
 
         String HashPassword = passwordEncoder.encode(request.getPassword());
 
@@ -150,25 +121,7 @@ public class UserService {
 
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
-        MultipartFile file = request.getProfileImage();
-
-        String profileImagePath = null;
-
-        if (file != null && !file.isEmpty()) {
-
-            String uploadDir = "src/main/resources/static/UploadPhoto/ProfileImage";
-            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
-            Path savePath = directoryPath.resolve(file.getOriginalFilename());
-
-            try {
-                Files.createDirectories(directoryPath);
-                profileImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
-                file.transferTo(savePath.toFile());
-
-            } catch (IOException | IllegalStateException e) {
-                throw new RuntimeException("파일 저장에 실패했습니다.", e);
-            }
-        }
+        String profileImagePath = fileStorageService.fileStore(request.getProfileImage());
 
         //여기서 JPA 알아서 변경 감지!!
         user.changeNickname(request.getNickname(),updatedDateTime);
