@@ -5,6 +5,7 @@ import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
 import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -31,35 +35,63 @@ public class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-
+    @Mock
+    private MultipartFile profileImage;
     @InjectMocks
     private UserService userService;
 
-    @Test
-    @DisplayName("사용자의 이메일, 비밀번호,유저 닉네임, 프로필 이미지를 정상적으로 요청하면 회원 가입을 성공한다. ")
-    void signUpTest(){
 
-        //준비
-        MockMultipartFile profileImage = new MockMultipartFile(
+
+    // 공통으로 쓸 필드 선언
+    private Long userId;
+    private LocalDateTime createdAt;
+    private MockMultipartFile MockprofileImage;
+    private SignUpRequestDto MocksignUprequest;
+
+    private User createTestUser(){
+        return new User(
+                "chloe@test.com",
+                "Chloe1234**",
+                "chloe",
+                "이미지 경로",
+                createdAt
+        );
+    }
+    private User testUser;
+
+    @BeforeEach
+    void setUp(){
+        userId = 1L;
+        createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
+
+      MockprofileImage = new MockMultipartFile(
                 "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
                 "profile.jpg",                // 원본 파일명
                 "image/jpeg",                 // 컨텐츠 타입
                 "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
         );
 
-        SignUpRequestDto request = new SignUpRequestDto(
+        MocksignUprequest = new SignUpRequestDto(
                 "chloe@test.com",
                 "Chloe1234**",
                 "chloe",
-                profileImage
+                MockprofileImage
         );
 
+        testUser = createTestUser();
+    }
+
+    @Test
+    @DisplayName("사용자의 이메일, 비밀번호,유저 닉네임, 프로필 이미지를 정상적으로 요청하면 회원 가입을 성공한다. ")
+    void signUpTest(){
+
+        //준비
         given(userRepository.existsByEmail("chloe@test.com")).willReturn(false);
         given(userRepository.existsByNickname("chloe")).willReturn(false);
         given(passwordEncoder.encode("Chloe1234**")).willReturn("encodedPassword");
 
         //실행
-        userService.createUser(request);
+        userService.createUser(MocksignUprequest);
 
         // 검증
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
@@ -72,71 +104,60 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("중복된 이메일로 회원가입 요청을 하면 예외가 발생한다.")
-    void DuplicateEmailTest(){
-        //준비
-        MockMultipartFile profileImage = new MockMultipartFile(
-                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
-                "profile.jpg",                // 원본 파일명
-                "image/jpeg",                 // 컨텐츠 타입
-                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
-        );
+    @DisplayName("회원가입 시에, 프로필 이미지 파일 업로드 중 예외가 발생한다.")
+    void signUp_RunTimeExceptionTest() throws IOException {
 
-        SignUpRequestDto request = new SignUpRequestDto(
+        //준비
+        given(userRepository.existsByEmail("chloe@test.com")).willReturn(false);
+        given(userRepository.existsByNickname("chloe")).willReturn(false);
+        given(passwordEncoder.encode("Chloe1234**")).willReturn("encodedPassword");
+        given(profileImage.getOriginalFilename()).willReturn("profile.jpg");
+
+        Path savePath = Paths.get("/UploadPhoto/ProfileImage/profile.jpg");
+
+        SignUpRequestDto signUprequest = new SignUpRequestDto(
                 "chloe@test.com",
                 "Chloe1234**",
                 "chloe",
                 profileImage
         );
 
+        doThrow(IOException.class)
+                .when(profileImage)
+                .transferTo(savePath.toFile());
+
+        // 검증 및 검증
+        assertThrows(RuntimeException.class,
+                () -> userService.createUser(signUprequest));
+    }
+
+    @Test
+    @DisplayName("중복된 이메일로 회원가입 요청을 하면 예외가 발생한다.")
+    void DuplicateEmailTest(){
+        //준비
         given(userRepository.existsByEmail("chloe@test.com")).willReturn(true);
 
         //실행 및 준비
         assertThrows(DuplicateResourceException.class,
-                () -> userService.createUser(request));
+                () -> userService.createUser(MocksignUprequest));
     }
 
     @Test
     @DisplayName("중복된 닉네임으로 회원가입 요청을 하면 예외가 발생한다.")
     void DuplicateNicknameTest(){
         //준비
-        MockMultipartFile profileImage = new MockMultipartFile(
-                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
-                "profile.jpg",                // 원본 파일명
-                "image/jpeg",                 // 컨텐츠 타입
-                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
-        );
-
-        SignUpRequestDto request = new SignUpRequestDto(
-                "chloe@test.com",
-                "Chloe1234**",
-                "chloe",
-                profileImage
-        );
-
         given(userRepository.existsByEmail("chloe@test.com")).willReturn(false);
         given(userRepository.existsByNickname("chloe")).willReturn(true);
 
         //실행 및 준비
         assertThrows(DuplicateResourceException.class,
-                () -> userService.createUser(request));
+                () -> userService.createUser(MocksignUprequest));
     }
 
     @Test
     @DisplayName("로그인 후 발급된 토큰을 헤더에 붙이고 회원 정보 조회를 요청하면 성공한다.")
     void userGetTest(){
         //준비
-        Long userId = 1L;
-        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
-
-        User user = new User(
-            "chloe@test.com",
-            "Chloe1234**",
-            "chloe",
-            "이미지 경로",
-             createdAt
-        );
-
         UserGetResponseDto response = new UserGetResponseDto(
                 "chloe@test.com",
                 "chloe",
@@ -144,7 +165,7 @@ public class UserServiceTest {
         );
 
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
-                .willReturn(Optional.of(user));
+                .willReturn(Optional.of(testUser));
 
 
         //실행
@@ -161,8 +182,6 @@ public class UserServiceTest {
     @DisplayName("회원 정보가 존재하지 않는다.")
     void usetGet_NotFound(){
         //준비
-        Long userId = 1L;
-
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
                 .willReturn(Optional.empty());
 
@@ -175,27 +194,9 @@ public class UserServiceTest {
     @DisplayName("닉네임,이미지를 담아 정상적으로 요청하면 회원 정보 수정 성공한다.")
     void changeUserTest(){
         //준비
-        Long userId = 1L;
-        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
-
-        User user = new User(
-                "chloe@test.com",
-                "Chloe1234**",
-                "chloe",
-                "이미지 경로",
-                createdAt
-        );
-
-        MockMultipartFile profileImage = new MockMultipartFile(
-                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
-                "profile.jpg",                // 원본 파일명
-                "image/jpeg",                 // 컨텐츠 타입
-                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
-        );
-
         UserChangeRequestDto request = new UserChangeRequestDto(
                 "chloe1",
-                profileImage
+                MockprofileImage
         );
 
         UserChangeResponseDto response = new UserChangeResponseDto(
@@ -208,7 +209,7 @@ public class UserServiceTest {
                 .willReturn(false);
 
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
-                .willReturn(Optional.of(user));
+                .willReturn(Optional.of(testUser));
 
         //실행
         UserChangeResponseDto result = userService.changeUser(userId,request);
@@ -216,7 +217,39 @@ public class UserServiceTest {
         //검증
         assertThat(result.getNickname()).isEqualTo(response.getNickname());
         assertThat(result.getProfileImage()).isEqualTo(response.getProfileImage());
-        assertThat(user.getUpdatedAt()).isNotNull();
+        assertThat(testUser.getUpdatedAt()).isNotNull();
+
+
+    }
+    @Test
+    @DisplayName("회원 정보 수정 시에, 프로필 이미지 파일 업로드 중 예외가 발생한다.")
+    void changeUser_RunTimeExceptionTest() throws IOException{
+        //준비
+        UserChangeRequestDto request = new UserChangeRequestDto(
+                "chloe1",
+                profileImage
+        );
+
+
+        given(userRepository.existsByNickname(request.getNickname()))
+                .willReturn(false);
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.of(testUser));
+
+        given(profileImage.getOriginalFilename()).willReturn("profile.jpg");
+
+        Path savePath = Paths.get("/UploadPhoto/ProfileImage/profile.jpg");
+
+
+        doThrow(IOException.class)
+                .when(profileImage)
+                .transferTo(savePath.toFile());
+
+        // 검증 및 검증
+        assertThrows(RuntimeException.class,
+                () -> userService.changeUser(userId,request));
+
 
 
     }
@@ -225,18 +258,9 @@ public class UserServiceTest {
     @DisplayName("수정 가능한 회원 정보가 존재하지 않아서 예외가 발생한다.")
     void changeUser_NotFoundTest(){
         //준비
-        Long userId = 1L;
-
-        MockMultipartFile profileImage = new MockMultipartFile(
-                "profileImage",              // 파라미터 이름 (필드명과 맞추면 좋음)
-                "profile.jpg",                // 원본 파일명
-                "image/jpeg",                 // 컨텐츠 타입
-                "test image content".getBytes() // 실제 파일 내용 (바이트 배열)
-        );
-
         UserChangeRequestDto request = new UserChangeRequestDto(
                 "chloe1",
-                profileImage
+                MockprofileImage
         );
 
         given(userRepository.existsByNickname(request.getNickname()))
@@ -254,37 +278,23 @@ public class UserServiceTest {
     @DisplayName("사용자가 변경할 비밀번호를 담아 정상적으로 요청을 보내면 비밀번호 변경이 성공한다")
     void changePassWordTest(){
         //준비
-        Long userId = 1L;
-        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
-
-        User user = new User(
-                "chloe@test.com",
-                "Chloe1234**",
-                "chloe",
-                "이미지 경로",
-                createdAt
-        );
-
         UserPasswordRequestDto request = new UserPasswordRequestDto(
                 "Chloe12345***"
         );
 
         given(userRepository.findByuserIdAndIsMemberTrue(userId))
-                .willReturn(Optional.of(user));
+                .willReturn(Optional.of(testUser));
 
         //실행
         userService.changePassWord(userId,request);
 
         //검증
-        assertThat(user.getUpdatedAt()).isNotNull();
+        assertThat(testUser.getUpdatedAt()).isNotNull();
     }
 
     @Test
     @DisplayName("회원 탈퇴 요청이 정상적으로 들어오면 회원 탈퇴가 성공한다. ")
     void deleteUserTest(){
-        Long userId = 1L;
-        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
-
         User user = new User(
                 "chloe@test.com",
                 "Chloe1234**",
@@ -309,6 +319,17 @@ public class UserServiceTest {
         assertThat(result.getIs_member()).isEqualTo(response.getIs_member());
         assertThat(user.getDeletedAt()).isNotNull();
 
+    }
+
+    @Test
+    @DisplayName("checkUser의 테스트")
+    void checkUser_NotFoundTest(){
+        //준비
+        given(userRepository.existsByuserIdAndIsMemberTrue(userId)).willReturn(false);
+
+        //실행 및 검증
+        assertThrows(NotFoundException.class,
+                () -> userService.checkUser(userId));
     }
 
 }
