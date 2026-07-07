@@ -1,9 +1,6 @@
 package homework.week4.User.service;
 
-import homework.week4.User.dto.SignUpRequestDto;
-import homework.week4.User.dto.UserChangeRequestDto;
-import homework.week4.User.dto.UserChangeResponseDto;
-import homework.week4.User.dto.UserGetResponseDto;
+import homework.week4.User.dto.*;
 import homework.week4.User.entity.User;
 import homework.week4.User.repository.UserRepository;
 import homework.week4.exception.DuplicateResourceException;
@@ -25,7 +22,6 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,7 +63,7 @@ public class UserServiceTest {
 
         // 검증
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository, times(1)).save(captor.capture());
+        verify(userRepository).save(captor.capture());
 
         User savedUser = captor.getValue();
         assertThat(savedUser.getEmail()).isEqualTo("chloe@test.com");
@@ -220,6 +216,7 @@ public class UserServiceTest {
         //검증
         assertThat(result.getNickname()).isEqualTo(response.getNickname());
         assertThat(result.getProfileImage()).isEqualTo(response.getProfileImage());
+        assertThat(user.getUpdatedAt()).isNotNull();
 
 
     }
@@ -250,6 +247,67 @@ public class UserServiceTest {
         //실행 및 검증
         assertThrows(NotFoundException.class,() -> userService.changeUser(userId,request));
 
+
+    }
+
+    @Test
+    @DisplayName("사용자가 변경할 비밀번호를 담아 정상적으로 요청을 보내면 비밀번호 변경이 성공한다")
+    void changePassWordTest(){
+        //준비
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
+
+        User user = new User(
+                "chloe@test.com",
+                "Chloe1234**",
+                "chloe",
+                "이미지 경로",
+                createdAt
+        );
+
+        UserPasswordRequestDto request = new UserPasswordRequestDto(
+                "Chloe12345***"
+        );
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.of(user));
+
+        //실행
+        userService.changePassWord(userId,request);
+
+        //검증
+        assertThat(user.getUpdatedAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 요청이 정상적으로 들어오면 회원 탈퇴가 성공한다. ")
+    void deleteUserTest(){
+        Long userId = 1L;
+        LocalDateTime createdAt = LocalDateTime.of(2026, 7, 6, 18, 30, 0);
+
+        User user = new User(
+                "chloe@test.com",
+                "Chloe1234**",
+                "chloe",
+                "이미지 경로",
+                createdAt
+        );
+
+        UserDeleteResponseDto response = new UserDeleteResponseDto(
+                "chloe",
+                false
+        );
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId))
+                .willReturn(Optional.of(user));
+
+        //실행
+        UserDeleteResponseDto result = userService.deleteUser(userId);
+
+        //검증
+        assertThat(result.getNickname()).isEqualTo(response.getNickname());
+        assertThat(result.getIs_member()).isEqualTo(response.getIs_member());
+        assertThat(user.getDeletedAt()).isNotNull();
 
     }
 
