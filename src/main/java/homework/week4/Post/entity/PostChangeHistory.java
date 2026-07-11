@@ -3,12 +3,16 @@ package homework.week4.Post.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import static lombok.AccessLevel.PROTECTED;
+
 
 @Entity
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "post_change_history")
 public class PostChangeHistory {
 

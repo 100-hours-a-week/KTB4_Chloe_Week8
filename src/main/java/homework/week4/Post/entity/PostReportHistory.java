@@ -4,12 +4,16 @@ import homework.week4.User.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "post_report_history")
 public class PostReportHistory {
 
