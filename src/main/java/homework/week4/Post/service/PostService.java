@@ -155,8 +155,6 @@ public class PostService {
 
         );
 
-        post.viewCountIncrement();
-
         List<CommentResponseDto> commentResponseDto = commentService.listComment(postId);
 
         return new PostDetailResponseDto(postResponseDto,commentResponseDto);
