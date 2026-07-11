@@ -24,6 +24,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -261,18 +262,26 @@ public class UserServiceTest {
     @DisplayName("사용자가 변경할 비밀번호를 담아 정상적으로 요청을 보내면 비밀번호 변경이 성공한다")
     void changePassWordTest(){
         //준비
-        UserPasswordRequestDto request = new UserPasswordRequestDto(
-                "Chloe12345***"
-        );
+        String rawPassword = "newPassword123!";
+        String encodedPassword = "encoded_newPassword123!";
 
-        given(userRepository.findByuserIdAndIsMemberTrue(userId))
-                .willReturn(Optional.of(testUser));
+        User user = User.builder().password("oldEncodedPassword").build();
+
+        given(userRepository.findByuserIdAndIsMemberTrue(userId)).willReturn(Optional.of(user));
+        given(passwordEncoder.encode(rawPassword)).willReturn(encodedPassword);
+
+        UserPasswordRequestDto request = new UserPasswordRequestDto(rawPassword);
 
         //실행
-        userService.changePassWord(userId,request);
+        userService.changePassWord(userId, request);
 
         //검증
-        assertThat(testUser.getUpdatedAt()).isNotNull();
+        // 1. 올바른 입력으로 호출됐는지
+        then(passwordEncoder).should().encode(rawPassword);
+        // 2. 결과값이 실제로 반영됐는지
+        assertThat(user.getPassword()).isEqualTo(encodedPassword);
+
+
     }
 
     @Test
