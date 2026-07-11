@@ -139,7 +139,9 @@ public class UserService {
         User user = getValidUser(userId);
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
-        user.changePassword(request.getPassword(),updatedDateTime);
+        String HashPassword = passwordEncoder.encode(request.getPassword());
+
+        user.changePassword(HashPassword,updatedDateTime);
     }
 
 
