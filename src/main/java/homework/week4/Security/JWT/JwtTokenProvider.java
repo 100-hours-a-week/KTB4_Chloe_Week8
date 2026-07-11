@@ -92,7 +92,8 @@ public class JwtTokenProvider {
         CustomUserDetails principal = new CustomUserDetails(user);
 
         // CustomUserDetails 객체를 만들어서 Authentication 리턴
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);    }
+        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
 
     // 3. 토큰 유효성 검증
     public boolean validateToken(String token) {
