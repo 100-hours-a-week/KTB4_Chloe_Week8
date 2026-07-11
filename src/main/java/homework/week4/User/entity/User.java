@@ -1,15 +1,13 @@
 package homework.week4.User.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
