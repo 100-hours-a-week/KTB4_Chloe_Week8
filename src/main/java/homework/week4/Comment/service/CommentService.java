@@ -157,7 +157,7 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    @PreAuthorize("@CommentService.getValidComment(#commentId).getCommenter().getUserId().equals(authentication.principal.userId)")
+    @PreAuthorize("@commentService.getValidComment(#commentId).getCommenter().getUserId().equals(authentication.principal.userId)")
     public CommentDeleteResponseDto deleteComment(
             Long userId,
             Long postId,
