@@ -28,7 +28,7 @@ public class PostController {
     public ResponseEntity<ApiResponse<List<PostResponseDto>>>listPost(
             @PathVariable Long user_id,
             @RequestParam(value = "cursor", required = false) Long cursorId, //null 허용
-            @RequestParam("limit") int limit_count
+            @RequestParam(name = "limit", defaultValue = "10") int limit_count
     ){
 
         List<PostResponseDto> result= postService.listPost(user_id,cursorId, limit_count);
