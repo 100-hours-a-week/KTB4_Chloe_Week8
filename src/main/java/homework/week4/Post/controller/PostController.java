@@ -57,6 +57,7 @@ public class PostController {
                 result.getPost_image(),
                 result.getDatewritten(),
                 result.getWriter(),
+                result.getProfileImage(),
                 result.getLike_count(),
                 result.getComment_count(),
                 result.getView_count(),

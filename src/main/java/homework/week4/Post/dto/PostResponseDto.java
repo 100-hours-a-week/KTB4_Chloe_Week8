@@ -19,6 +19,8 @@ public class PostResponseDto {
     private LocalDateTime datewritten;
     private String writer;
 
+    private String profileImage;
+
     private Long like_count;
     private Long comment_count;
     private Long view_count;
@@ -32,6 +34,7 @@ public class PostResponseDto {
             String post_image,
             LocalDateTime datewritten,
             String writer,
+            String profileImage,
             Long like_count,
             Long comment_count,
             Long view_count
@@ -42,6 +45,7 @@ public class PostResponseDto {
         this.post_image = post_image;
         this.datewritten = datewritten;
         this.writer = writer;
+        this.profileImage = profileImage;
         this.like_count = like_count;
         this.comment_count = comment_count;
         this.view_count = view_count;

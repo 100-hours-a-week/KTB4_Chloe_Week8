@@ -16,4 +16,7 @@ public class PostDetailResponseDto {
 
     @JsonProperty("comments")
     private List<CommentResponseDto> commentResponseDto;
+
+    //이걸 요청한 사용자가 좋아요 눌렀는지
+    private Boolean is_liked;
 }
