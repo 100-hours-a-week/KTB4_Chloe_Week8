@@ -26,6 +26,7 @@ public class SignUpRequestDto {
             message = "닉네임은 10자 아하 입니다.")
     private String nickname;
 
+    @NotBlank(message = "프로필 이미지는 필수값 입니다.")
     private MultipartFile profile_image;
 
 }
