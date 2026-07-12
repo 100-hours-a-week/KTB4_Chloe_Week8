@@ -100,6 +100,10 @@ public class Post {
         this.commentCount = commentCount + 1L;
     }
 
+    public void commentCountDecrement(){
+        this.commentCount = commentCount - 1L;
+    }
+
     public void viewCountIncrement() {
         this.viewCount = viewCount+1L;
     }
