@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -32,7 +31,7 @@ public class CommentService {
 
     //일반 댓글 생성
     @Transactional
-    public CommentResponseDto createComment(Long userId, Long postId, @Valid CommentRequestDto request){
+    public CommentResponseDto createComment(Long userId, Long postId,CommentRequestDto request){
         User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
         Post post = postVerifyService.getValidPost(postId);
         LocalDateTime createdDateTime = LocalDateTime.now();
@@ -62,7 +61,7 @@ public class CommentService {
             Long userId,
             Long postId,
             Long commentId,
-            @Valid CommentRequestDto request){
+            CommentRequestDto request){
 
         User user = userService.getValidUser(userId); //에외가 일어나면 밑에도 실행 X
         Post post = postVerifyService.getValidPost(postId);
@@ -139,7 +138,7 @@ public class CommentService {
             Long userId,
             Long postId,
             Long commentId,
-            @Valid CommentRequestDto request){
+            CommentRequestDto request){
 
         userService.checkUser(userId);
         postVerifyService.checkPost(postId);

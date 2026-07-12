@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.time.LocalDateTime;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 public class UserService {
 
@@ -42,7 +41,7 @@ public class UserService {
 
     //사용자 등록
     @Transactional
-    public SignUpResponseDto createUser(@Valid @ModelAttribute SignUpRequestDto request) {
+    public SignUpResponseDto createUser(@ModelAttribute SignUpRequestDto request) {
 
         //중복 검사
         emailDuplicateCheck(request.getEmail());
@@ -111,22 +110,31 @@ public class UserService {
     }
 
 
+    //닉네임 변경 시 중복 검사
+    public void nicknameChangeDuplicateCheck(String nickname,Long userId){
+        if(userRepository.existsByNicknameAndUserIdNot(nickname,userId)){
+            throw new DuplicateResourceException("중복된 닉네임이 존재합니다.");
+        }
+    }
+
 
     //사용자 정보 수정
     @Transactional
-    public UserChangeResponseDto changeUser(Long userId, @Valid UserChangeRequestDto request){
+    public UserChangeResponseDto changeUser(Long userId,UserChangeRequestDto request){
 
         User user = getValidUser(userId);
-        nicknameDuplicateCheck(request.getNickname());
-
+        nicknameChangeDuplicateCheck(request.getNickname(),userId);
 
         LocalDateTime updatedDateTime = LocalDateTime.now();
 
-        String profileImagePath = fileStorageService.fileStore(request.getProfileImage());
-
         //여기서 JPA 알아서 변경 감지!!
         user.changeNickname(request.getNickname(),updatedDateTime);
-        user.changeProfileImgae(profileImagePath);
+
+
+        if(request.getProfileImage() != null && !request.getProfileImage().isEmpty()){
+            String profileImagePath = fileStorageService.fileStore(request.getProfileImage());
+            user.changeProfileImage(profileImagePath);
+        }
 
 
         return new UserChangeResponseDto(user.getNickname(), user.getProfileImage());
@@ -135,7 +143,7 @@ public class UserService {
 
     //사용자 비밀번호 수정
     @Transactional
-    public void changePassWord(Long userId, @Valid UserPasswordRequestDto request){
+    public void changePassWord(Long userId,UserPasswordRequestDto request){
         User user = getValidUser(userId);
         LocalDateTime updatedDateTime = LocalDateTime.now();
 

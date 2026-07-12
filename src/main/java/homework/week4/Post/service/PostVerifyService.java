@@ -5,10 +5,8 @@ import homework.week4.Post.repository.PostRepository;
 import homework.week4.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 public class PostVerifyService {
 

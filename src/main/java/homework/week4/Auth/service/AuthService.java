@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -28,7 +27,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public LoginResponseDto LoginUser (@Valid @RequestBody LoginRequestDto request){
+    public LoginResponseDto LoginUser ( @RequestBody LoginRequestDto request){
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
             JwtToken jwtToken = jwtTokenProvider.createToken(authentication);

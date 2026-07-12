@@ -15,7 +15,6 @@ import homework.week4.Post.repository.ReportRepository;
 import homework.week4.User.entity.User;
 import homework.week4.User.service.UserService;
 import homework.week4.exception.DuplicateResourceException;
-import homework.week4.exception.ForbiddenException;
 import homework.week4.exception.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 public class PostService {
 
@@ -55,7 +53,7 @@ public class PostService {
 
     //게시글 등록
     @Transactional
-    public PostResponseDto createPost(Long userId, @Valid @ModelAttribute PostRequestDto request ){
+    public PostResponseDto createPost(Long userId, @ModelAttribute PostRequestDto request ){
         User writer = userService.getValidUser(userId);
         LocalDateTime createdDateTime = LocalDateTime.now();
 
@@ -166,7 +164,7 @@ public class PostService {
     //게시글 수정
     @Transactional
     @PreAuthorize("@postVerifyService.getValidPost(#postId).getWriter().getUserId().equals(authentication.principal.userId)")
-    public void modifyPost (Long userId, Long postId, @Valid @ModelAttribute PostRequestDto request){
+    public void modifyPost (Long userId, Long postId,@ModelAttribute PostRequestDto request){
         userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
 
         Post post = postVerifyService.getValidPost(postId);

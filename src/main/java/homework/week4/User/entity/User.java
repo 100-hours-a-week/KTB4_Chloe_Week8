@@ -60,7 +60,7 @@ public class User {
     }
 
     //프로필 이미지 변경
-    public void changeProfileImgae (String profileImage){
+    public void changeProfileImage(String profileImage){
         this.profileImage = profileImage;
     }
 
