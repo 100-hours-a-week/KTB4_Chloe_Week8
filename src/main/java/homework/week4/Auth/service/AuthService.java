@@ -25,13 +25,20 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     @Transactional
     public LoginResponseDto LoginUser ( @RequestBody LoginRequestDto request){
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
             JwtToken jwtToken = jwtTokenProvider.createToken(authentication);
-            return new LoginResponseDto(jwtToken);
+
+            //프로필 이미지 반환
+            User user = userRepository.findByEmailAndIsMemberTrue(request.getEmail())
+                    .orElseThrow(() -> new NotFoundException("존재하지 않는 사용자입니다."));
+
+            return new LoginResponseDto(jwtToken, user.getProfileImage());
+
         } catch (BadCredentialsException e) {
             throw new UnauthorizedException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }

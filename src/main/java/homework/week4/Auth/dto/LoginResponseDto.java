@@ -11,9 +11,15 @@ import lombok.RequiredArgsConstructor;
 @NoArgsConstructor
 public class LoginResponseDto {
     private JwtToken jwtToken;
+    private String profileImage;
     private String link;
 
-    public LoginResponseDto(JwtToken jwtToken) {
+    public LoginResponseDto(
+            JwtToken jwtToken,
+            String profileImage
+    ) {
+
         this.jwtToken = jwtToken;
+        this.profileImage = profileImage;
     }
 }
