@@ -106,7 +106,7 @@ public class PostService {
 
 
     // 상세 게시글 조회
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDetailResponseDto getPost(Long userId, Long postId){
         User user = userService.getValidUser(userId);
         Post post = postVerifyService.getValidPost(postId);
@@ -134,6 +134,20 @@ public class PostService {
         return new PostDetailResponseDto(postResponseDto,commentResponseDto,is_liked);
     }
 
+
+    //게시글 수정을 위한 정보 조회
+    @Transactional(readOnly = true)
+    @PreAuthorize("@postVerifyService.getValidPost(#postId).getWriter().getUserId().equals(authentication.principal.userId)")
+    public PostEditResponseDto editPost(Long userId,Long postId){
+        userService.checkUser(userId);
+        Post post = postVerifyService.getValidPost(postId);
+
+        return new PostEditResponseDto(
+                post.getTitle(),
+                post.getContent(),
+                post.getPostImage()
+        );
+    }
 
 
 
@@ -197,7 +211,7 @@ public class PostService {
         //좋아요 이미 있는지 확인
         likeRespoitory.findByUserUserIdAndPostPostId(user.getUserId(), post.getPostId())
                 .ifPresent(like -> {
-                    throw new DuplicateResourceException("이미 존재하는 좋아요입니다.");
+                    throw new DuplicateResourceException("이미 존재하는 좋아요입니다.","like");
                 });
 
         Like like = new Like(user,post);
@@ -237,7 +251,7 @@ public class PostService {
     //해당 신고가 존재하는지 확인
     void verifyUserInPost(Long userId, Long postId){
         if (reportRepository.existsByUserUserIdAndPostPostId(userId, postId)) {
-            throw new DuplicateResourceException("이미 신고한 게시글입니다.");
+            throw new DuplicateResourceException("이미 신고한 게시글입니다.","report");
         }
     }
 
