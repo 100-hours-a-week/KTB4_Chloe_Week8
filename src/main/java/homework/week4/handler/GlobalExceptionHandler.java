@@ -90,7 +90,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(exception.getStatus())
-                .body(ErrorResponse.of(exception.getMessage()));
+                .body(ErrorResponse.of(
+                        exception.getMessage(),
+                        exception.getField()
+                ));
     }
 
     //예상하지 못한 예외 처리
