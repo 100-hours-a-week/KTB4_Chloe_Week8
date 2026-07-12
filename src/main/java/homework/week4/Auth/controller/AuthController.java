@@ -26,7 +26,7 @@ public class AuthController {
         LoginResponseDto response = new LoginResponseDto(
                 result.getJwtToken(),
                 result.getProfileImage(),
-                "http://127.0.0.1:5500/Board/board.html"
+                "http://127.0.0.1:5500/Page/Board/board.html"
         );
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -35,7 +35,7 @@ public class UserController {
         SignUpResponseDto result = userService.createUser(request);
         SignUpResponseDto response = new SignUpResponseDto(
                 result.getUser_id(),
-                "http://127.0.0.1:5500/Login/login.html"
+                "http://127.0.0.1:5500/Page/Login/login.html"
         );
 
         return ResponseEntity
@@ -68,7 +68,7 @@ public class UserController {
         UserDeleteResponseDto response = new UserDeleteResponseDto(
                 result.getNickname(),
                 result.getIs_member(),
-                "http://127.0.0.1:5500/Login/login.html"
+                "http://127.0.0.1:5500/Page/Login/login.html"
         );
 
         return ResponseEntity

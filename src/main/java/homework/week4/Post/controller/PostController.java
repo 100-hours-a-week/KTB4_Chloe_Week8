@@ -27,7 +27,7 @@ public class PostController {
     public ResponseEntity<ApiResponse<List<PostResponseDto>>>listPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "cursor", required = false) Long cursorId, //null 허용
-            @RequestParam(name = "limit") int limit_count
+            @RequestParam(name = "limit", defaultValue = "10") int limit_count
     ){
         Long userId = userDetails.getUserId();
         List<PostResponseDto> result= postService.listPost(userId,cursorId, limit_count);
@@ -60,7 +60,7 @@ public class PostController {
                 result.getLike_count(),
                 result.getComment_count(),
                 result.getView_count(),
-                "http://127.0.0.1:5500/Post_detail/post_detail.html?postId=" + result.getPost_id()
+                "http://127.0.0.1:5500/Page/Post_detail/post_detail.html?postId=" + result.getPost_id()
         );
 
         return ResponseEntity
