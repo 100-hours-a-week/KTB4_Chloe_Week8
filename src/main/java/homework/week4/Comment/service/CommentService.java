@@ -49,9 +49,11 @@ public class CommentService {
         return new CommentResponseDto(
                 comment.getCommentId(),
                 comment.getCommenter().getNickname(),
+                comment.getCommenter().getProfileImage(),
                 comment.getCommentContent(),
                 comment.getCommentDateWritten(),
-                comment.getIsBlinded()
+                comment.getIsBlinded(),
+                post.getCommentCount()
         );
     }
 
@@ -104,6 +106,7 @@ public class CommentService {
     //댓글 목록 반환 -> 상세 게시글을 위해
     @Transactional(readOnly = true)
     public List<CommentResponseDto> listComment (Long postId){
+        Post post = postVerifyService.getValidPost(postId);
         List<Comment> commentsList = commentRepository.findAllByPostId(postId);
 
         List<CommentResponseDto> commentsListDto = new ArrayList<>();
@@ -112,9 +115,11 @@ public class CommentService {
                     new CommentResponseDto(
                             commentdto.getCommentId(),
                             commentdto.getCommenter().getNickname(),
+                            commentdto.getCommenter().getProfileImage(),
                             commentdto.getCommentContent(),
                             commentdto.getCommentDateWritten(),
-                            commentdto.getIsBlinded()
+                            commentdto.getIsBlinded(),
+                            post.getCommentCount()
                     )
 
             );
