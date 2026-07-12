@@ -3,6 +3,7 @@ package homework.week4.Post.service;
 import homework.week4.Comment.dto.CommentResponseDto;
 import homework.week4.Comment.repository.CommentRepository;
 import homework.week4.Comment.service.CommentService;
+import homework.week4.FileUpload.FileStorageService;
 import homework.week4.Post.dto.*;
 import homework.week4.Post.entity.Like;
 import homework.week4.Post.entity.Post;
@@ -18,21 +19,13 @@ import homework.week4.exception.DuplicateResourceException;
 import homework.week4.exception.NotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,37 +44,15 @@ public class PostService {
     private final CommentService commentService;
     private final PostVerifyService postVerifyService;
 
+    private final FileStorageService fileStorageService;
+
     //게시글 등록
     @Transactional
     public PostResponseDto createPost(Long userId, @ModelAttribute PostRequestDto request ){
         User writer = userService.getValidUser(userId);
         LocalDateTime createdDateTime = LocalDateTime.now();
 
-        MultipartFile file = request.getPostImage();
-        String postImagePath = null;
-
-        if (file != null && !file.isEmpty()) {
-
-            String uploadDir = "src/main/resources/static/UploadPhoto/PostImage";
-
-            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
-
-            Path savePath = directoryPath.resolve(file.getOriginalFilename());
-
-            try {
-                Files.createDirectories(directoryPath);
-                System.out.println("저장 경로 = " + savePath.toAbsolutePath());
-
-                postImagePath = "/UploadPhoto/PostImage/" + file.getOriginalFilename();
-
-                file.transferTo(savePath.toFile());
-
-                System.out.println("파일 저장 성공");
-            } catch (IOException | IllegalStateException e) {
-                e.printStackTrace();
-                throw new RuntimeException("파일 저장에 실패했습니다.", e);
-            }
-        }
+        String postImagePath = fileStorageService.fileStore(request.getPostImage());
 
         Post post = new Post(
                 request.getTitle(),
@@ -100,6 +71,7 @@ public class PostService {
                 post.getPostImage(),
                 post.getDateWritten(),
                 post.getWriter().getNickname(),
+                post.getWriter().getProfileImage(),
                 0L,0L,0L
         );
     }
@@ -121,6 +93,7 @@ public class PostService {
                         postdto.getPostImage(),
                         postdto.getDateWritten(),
                         postdto.getWriter().getNickname(),
+                        postdto.getWriter().getProfileImage(),
                         postdto.getLikeCount(),
                         postdto.getCommentCount(),
                         postdto.getViewCount()
@@ -135,8 +108,10 @@ public class PostService {
     // 상세 게시글 조회
     @Transactional(readOnly = true)
     public PostDetailResponseDto getPost(Long userId, Long postId){
-        userService.checkUser(userId);
+        User user = userService.getValidUser(userId);
         Post post = postVerifyService.getValidPost(postId);
+
+        Boolean is_liked =likeRespoitory.existsByPostAndUser(post,user);
 
         post.viewCountIncrement();
 
@@ -147,6 +122,7 @@ public class PostService {
                 post.getPostImage(),
                 post.getDateWritten(),
                 post.getWriter().getNickname(),
+                post.getWriter().getProfileImage(),
                 post.getLikeCount(),
                 post.getCommentCount(),
                 post.getViewCount()
@@ -155,7 +131,7 @@ public class PostService {
 
         List<CommentResponseDto> commentResponseDto = commentService.listComment(postId);
 
-        return new PostDetailResponseDto(postResponseDto,commentResponseDto);
+        return new PostDetailResponseDto(postResponseDto,commentResponseDto,is_liked);
     }
 
 
@@ -164,57 +140,34 @@ public class PostService {
     //게시글 수정
     @Transactional
     @PreAuthorize("@postVerifyService.getValidPost(#postId).getWriter().getUserId().equals(authentication.principal.userId)")
-    public void modifyPost (Long userId, Long postId,@ModelAttribute PostRequestDto request){
+    public void modifyPost (Long userId, Long postId, @ModelAttribute PostRequestDto request){
         userService.checkUser(userId); //에외가 일어나면 밑에도 실행 X
 
         Post post = postVerifyService.getValidPost(postId);
-        LocalDateTime updatedDateTime = LocalDateTime.now();
+        LocalDateTime changedAt = LocalDateTime.now();
 
-        MultipartFile file = request.getPostImage();
-        String postImagePath = null;
+        //게시글 수정 이력 보존
+        PostChangeHistory postChangeHistory = new PostChangeHistory(
+                post,
+                changedAt,
+                post.getTitle(),
+                post.getContent(),
+                post.getPostImage()
+        );
 
-        if (file != null && !file.isEmpty()) {
+        //수정 이력 저장
+        changeRepository.save(postChangeHistory);
 
-            String uploadDir = "src/main/resources/static/UploadPhoto/PostImage";
-
-            Path directoryPath = Paths.get(uploadDir).toAbsolutePath();
-
-            Path savePath = directoryPath.resolve(file.getOriginalFilename());
-
-            try {
-                Files.createDirectories(directoryPath);
-                System.out.println("저장 경로 = " + savePath.toAbsolutePath());
-
-                postImagePath = "/UploadPhoto/ProfileImage/" + file.getOriginalFilename();
-
-                file.transferTo(savePath.toFile());
-
-                System.out.println("파일 저장 성공");
-            } catch (IOException | IllegalStateException e) {
-                e.printStackTrace();
-                throw new RuntimeException("파일 저장에 실패했습니다.", e);
-            }
-        }
+        //게시글 이미지 저장
+        String postImagePath = fileStorageService.fileStore(request.getPostImage());
 
         //게시글 수정
         post.modifyPost(
                 request.getTitle(),
                 request.getContent(),
                 postImagePath,
-                updatedDateTime
+                changedAt
         );
-
-        //게시글 수정 이력 보존
-        PostChangeHistory postChangeHistory = new PostChangeHistory(
-                post,
-                updatedDateTime,
-                request.getTitle(),
-                request.getContent(),
-                postImagePath
-        );
-
-        //수정 이력 저장
-        changeRepository.save(postChangeHistory);
 
     }
 
