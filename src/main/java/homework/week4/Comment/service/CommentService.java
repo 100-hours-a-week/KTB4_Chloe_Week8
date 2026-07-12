@@ -131,7 +131,7 @@ public class CommentService {
     public void verifyCommentInPost(Long postId,Long commentId){
         Long postIdByComment = commentRepository.findPostIdByCommentId(commentId);
 
-        if(postId.equals(postIdByComment)){
+        if(!postId.equals(postIdByComment)){
             throw new NotFoundException("해당 댓글이 게시글에 소속되어 있지 않습니다.");
         }
     }
@@ -168,7 +168,7 @@ public class CommentService {
             Long commentId
     ){
         userService.getValidUser(userId);
-        postVerifyService.checkPost(postId);
+        Post post = postVerifyService.getValidPost(postId);
         verifyCommentInPost(postId,commentId);
 
         Comment comment = getValidComment(commentId); //삭제할 댓글
@@ -184,6 +184,8 @@ public class CommentService {
             //대댓글이 없는 댓글 삭제 일시 추가
             comment.isDeleted(deletedDateTime);
         }
+
+        post.commentCountDecrement();
 
 
         return new CommentDeleteResponseDto(comment.getIsBlinded());

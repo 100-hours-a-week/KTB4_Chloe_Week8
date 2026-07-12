@@ -28,14 +28,14 @@ public class UserService {
     //이메일 중복 검사
     public void emailDuplicateCheck(String email){
         if(userRepository.existsByEmail(email)){
-            throw new DuplicateResourceException("중복된 이메일이 존재합니다.");
+            throw new DuplicateResourceException("중복된 이메일이 존재합니다.","email");
         }
     }
 
     //닉네임 중복 검사
     public void nicknameDuplicateCheck(String nickname){
         if(userRepository.existsByNickname(nickname)){
-            throw new DuplicateResourceException("중복된 닉네임이 존재합니다.");
+            throw new DuplicateResourceException("중복된 닉네임이 존재합니다.","nickname");
         }
     }
 
@@ -113,7 +113,7 @@ public class UserService {
     //닉네임 변경 시 중복 검사
     public void nicknameChangeDuplicateCheck(String nickname,Long userId){
         if(userRepository.existsByNicknameAndUserIdNot(nickname,userId)){
-            throw new DuplicateResourceException("중복된 닉네임이 존재합니다.");
+            throw new DuplicateResourceException("중복된 닉네임이 존재합니다.","nickname");
         }
     }
 

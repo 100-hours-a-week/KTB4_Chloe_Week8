@@ -1,5 +1,6 @@
 package homework.week4.User.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,7 +27,7 @@ public class SignUpRequestDto {
             message = "닉네임은 10자 아하 입니다.")
     private String nickname;
 
-    @NotBlank(message = "프로필 이미지는 필수값 입니다.")
+    @NotNull(message = "프로필 이미지는 필수값 입니다.")
     private MultipartFile profile_image;
 
 }
